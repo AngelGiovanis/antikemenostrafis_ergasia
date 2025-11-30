@@ -18,35 +18,26 @@ class parameters{
         int num_stop_signs;
         int num_traffic_lights;
         int max_simulation_ticks;
+        int min_confidence_threshold;
         //TODO i need to see how i can interpret the cords x and y starting and ending 
-    void print_help(){
-        // cout << "Self-Driving Car Simulation" << endl;
-        // cout << "Usage:" << endl;
-        // cout << "  --seed <n>                Random seed (default: current time)" << endl; //this. thing goes int hte .cpp file
-        // cout << "  --dimX <n>                World width (default: 40)" << endl;
-        // cout << "  --dimY <n>                World height (default: 40)" << endl;
-        // cout << "  --numMovingCars <n>       Number of moving cars (default: 3)" << endl;
-        // cout << "  --numMovingBikes <n>      Number of moving bikes (default: 4)" << endl;
-        // cout << "  --numParkedCars <n>       Number of parked cars (default: 5)" << endl;
-        // cout << "  --numStopSigns <n>        Number of stop signs (default: 2)" << endl;
-        // cout << "  --numTrafficLights <n>    Number of traffic lights (default: 2)" << endl;
-        // cout << "  --simulationTicks <n>     Maximum simulation ticks (default: 100)" << endl;
-        // cout << "  --minConfidenceThreshold <n>  Minimum confidence cutoff (default: 40)" << endl;
-        // cout << "  --gps <x1> <y1> [x2 y2 ...]  GPS target coordinates (required)" << endl;
-        // cout << "  --help                    Show this help message" << endl << endl;
-        // cout << "Example usage:" << endl;
-        // cout << "  ./oopp_proj_2025 --seed 12 --dimY 50 --gps 10 20 32 15" << endl;
-    }
+    void print_help();
+
+    void extract_info(char * argv);
 
     parameters(); //we need two constructors one that is if they only gave the gps and one for if they gave other thigns also
-    parameters(char * argv);
 };
 
 class grid_world{
     private:
-        int grammes;
-        int stiles;
+        int height;
+        int width;
+        int * map;
     public:
+        grid_world(parameters parametroi);
+
+        int * create_map(){
+            
+        }
 
 };
 
