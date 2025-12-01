@@ -1,11 +1,12 @@
+#include <vector>
 #include "../include/types.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
 //parameters class functions intrepretatinos
 
-void parameters::print_debug() const{
+void parameters::print_debug() const {
     cout << "Parameters Debug Info:" << endl;
     cout << "  seed: " << seed << endl;
     cout << "  world_width: " << world_width << endl;
@@ -17,6 +18,24 @@ void parameters::print_debug() const{
     cout << "  num_traffic_lights: " << num_traffic_lights << endl;
     cout << "  max_simulation_ticks: " << max_simulation_ticks << endl;
     cout << "  min_confidence_threshold: " << min_confidence_threshold << endl;
+
+    cout << "  GPS targets:" << endl;
+    if (gps_targets.empty()) {
+        cout << "    (none)" << endl;
+    } else {
+        for (size_t i = 0; i < gps_targets.size(); ++i) {
+            const position &pos = gps_targets[i];
+            cout << "    [" << i << "] (" << pos.get_x() << ", " << pos.get_y() << ")" << endl;
+        }
+    }
+} //chatgpt function to help me debug 
+
+void parameters::extract_gps_targets( char ** argv, int index_of_gps_flag, int argc){
+    index_of_gps_flag++;
+    while(index_of_gps_flag < argc){
+        gps_targets.push_back(position(atoi(argv[index_of_gps_flag]),atoi(argv[index_of_gps_flag + 1])));
+        index_of_gps_flag+=2;
+    }
 }
 
 
@@ -55,9 +74,8 @@ void parameters::extract_info(char ** argv,int argc){
         if(string(argv[i]) == "--minConfidenceThreshold"){
             min_confidence_threshold = atoi(argv[i + 1]);
         }
-
         if(string(argv[i]) == "--gps"){
-            //TODO edw prepei na dw pws tha kanw extract ploiroforia 
+            extract_gps_targets(argv,i,argc);
         }
 
     }
@@ -68,7 +86,6 @@ parameters::parameters()
     {
         srand(seed);
     }
-    //TODO i need to find a function that tells the current time for seed 
 
 
 void parameters::print_help() const{
@@ -150,7 +167,7 @@ void self_driving_car::accelerate(){
     }
 }
 
-//meiwse taxitita
+
 void self_driving_car::decelerate(){
     if(speed == "HALF_SPEED"){
         speed = "STOPPED";
@@ -159,3 +176,13 @@ void self_driving_car::decelerate(){
         speed = "HALF_SPEED";
     }
 }
+
+//position
+position::position(const int &grammes,const int &stilles)
+    : x(grammes),y(stilles)
+    {
+
+    }
+
+position::position()
+    :x(0),y(0){}

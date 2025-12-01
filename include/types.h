@@ -7,6 +7,21 @@
 
 using namespace std;
 
+class position{
+    private:
+        int x;
+        int y;
+    public:
+        int get_x() const{
+            return x;
+        }
+        int get_y() const{
+            return y;
+        }
+        position(const int &grammes,const int &stilles);
+        position();
+};
+
 class world{
     private:
         bool finished;
@@ -30,6 +45,9 @@ class parameters{
         int min_confidence_threshold;
         //TODO i need to see how i can interpret the cords x and y starting and ending (vector or queue)
         vector <position> gps_targets;
+
+        void extract_gps_targets( char ** argv, int index_of_gps_flag, int argc);
+
         void print_help() const ;
 
         void print_debug() const;
@@ -75,20 +93,6 @@ class navigation_system{
     private:
 };
 
-class position{
-    private:
-        int x;
-        int y;
-    public:
-        int get_x(){
-            return x;
-        }
-        int get_y(){
-            return y;
-        }
-        
-
-};
 
 class sensors{
     private:
