@@ -84,9 +84,18 @@ grid_world::grid_world(parameters parametroi)
     }
     //works because all the parameters are public haha to get fiunction
 
+int ** grid_world::create_map(){
+    int ** map = new int*[height];
+    for(int i = 0; i < height; i ++){ //didnt use vector because size is static
+        map[i] = new int[width]();
+    }
+    return map;
+}
+
+    
 //gia traffic_light
 
-void trafic_light::change_the_state(){ //skata ksexnaw oti den ginontai edw oi ilopoiiseis
+void trafic_light::change_the_state(){ 
     if(fanari_ticks < 4){
         katastasi = "RED";
     }
@@ -99,5 +108,24 @@ void trafic_light::change_the_state(){ //skata ksexnaw oti den ginontai edw oi i
     else{
         fanari_ticks = 0;
         katastasi = "RED";
+    }
+}
+
+//self driving car 
+void self_driving_car::accelerate(){
+    if(speed == "STOPPED"){
+        speed = "HALF_SPEED";
+    }
+    else if(speed == "HALF_SPEED"){
+        speed = "FULL_SPEED";
+    }
+}
+
+void self_driving_car::decelerate(){
+    if(speed == "HALF_SPEED"){
+        speed = "STOPPED";
+    }
+    else if(speed == "FULL_SPEED"){
+        speed = "HAlF_SPEED";
     }
 }

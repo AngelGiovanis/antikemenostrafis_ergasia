@@ -111,6 +111,7 @@ class object{
     public:
         void get_id(string &tautotita) const;
         void get_glyph(char &xaraktiras) const;
+        void get_thesi(int &x, int &y) const;
 };
 
 class traffic_sign:private object{
@@ -134,7 +135,8 @@ class trafic_light:private object{ //TODO den mou aresei auti i ilopoiisi
 
 class moving_object:private object{
     private:
-
+        string speed;
+        
     public:
 
 };
