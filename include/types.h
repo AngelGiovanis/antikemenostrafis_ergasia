@@ -7,6 +7,13 @@
 
 using namespace std;
 
+class world{
+    private:
+        bool finished;
+        int current_ticks;
+    public:
+};
+
 class parameters{
     public:
         int seed;
@@ -47,7 +54,7 @@ class grid_world{
             for(int i = 0; i< height; i++){
                 delete[] map[i];
             }
-            delete map;
+            delete[] map;
 
         }
 };
@@ -126,8 +133,9 @@ class trafic_light:private object{ //TODO den mou aresei auti i ilopoiisi
         string katastasi;
         int fanari_ticks;
     public:
-
         void change_the_state();
+    trafic_light();
+    ~trafic_light();
 
 };
 
@@ -136,7 +144,6 @@ class trafic_light:private object{ //TODO den mou aresei auti i ilopoiisi
 class moving_object:private object{
     private:
         string speed;
-        
     public:
 
 };

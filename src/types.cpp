@@ -5,7 +5,6 @@
 
 //parameters class functions intrepretatinos
 
-
 void parameters::extract_info(char ** argv,int argc){
     for(int i = 1; i < argc; i+=2){
         if(string(argv[i]) == "--seed"){
@@ -92,8 +91,15 @@ int ** grid_world::create_map(){
     return map;
 }
 
-    
+
 //gia traffic_light
+
+
+trafic_light::trafic_light()
+    :katastasi("RED"),fanari_ticks(0)
+    {
+
+    }
 
 void trafic_light::change_the_state(){ 
     if(fanari_ticks < 4){
