@@ -5,6 +5,21 @@
 
 //parameters class functions intrepretatinos
 
+void parameters::print_debug() const{
+    cout << "Parameters Debug Info:" << endl;
+    cout << "  seed: " << seed << endl;
+    cout << "  world_width: " << world_width << endl;
+    cout << "  world_height: " << world_height << endl;
+    cout << "  num_moving_cars: " << num_moving_cars << endl;
+    cout << "  num_moving_bikes: " << num_moving_bikes << endl;
+    cout << "  num_parked_cars: " << num_parked_cars << endl;
+    cout << "  num_stop_signs: " << num_stop_signs << endl;
+    cout << "  num_traffic_lights: " << num_traffic_lights << endl;
+    cout << "  max_simulation_ticks: " << max_simulation_ticks << endl;
+    cout << "  min_confidence_threshold: " << min_confidence_threshold << endl;
+}
+
+
 void parameters::extract_info(char ** argv,int argc){
     for(int i = 1; i < argc; i+=2){
         if(string(argv[i]) == "--help"){
@@ -41,7 +56,7 @@ void parameters::extract_info(char ** argv,int argc){
             min_confidence_threshold = atoi(argv[i + 1]);
         }
 
-        if(string(argv[i]) == "−−gps"){
+        if(string(argv[i]) == "--gps"){
             //TODO edw prepei na dw pws tha kanw extract ploiroforia 
         }
 
@@ -49,14 +64,14 @@ void parameters::extract_info(char ** argv,int argc){
 }
 
 parameters::parameters()
-    :seed(),world_width(40),world_height(40),num_moving_cars(3),num_moving_bikes(4),num_parked_cars(5),num_stop_signs(2),num_traffic_lights(2),max_simulation_ticks(100),min_confidence_threshold(40)
+    :seed(time(0)),world_width(40),world_height(40),num_moving_cars(3),num_moving_bikes(4),num_parked_cars(5),num_stop_signs(2),num_traffic_lights(2),max_simulation_ticks(100),min_confidence_threshold(40)
     {
-
+        srand(seed);
     }
     //TODO i need to find a function that tells the current time for seed 
 
 
-void parameters::print_help(){
+void parameters::print_help() const{
     cout << "Self-Driving Car Simulation" << endl;
     cout << "Usage:" << endl;
     cout << "  --seed <n>                Random seed (default: current time)" << endl; //this. thing goes int hte .cpp file
@@ -76,6 +91,15 @@ void parameters::print_help(){
 }
 
 //gia gird_world
+
+grid_world::~grid_world(){
+    for(int i = 0; i< height; i++){
+        delete[] map[i];
+    }
+    delete[] map;
+
+}
+
 grid_world::grid_world(parameters parametroi)
     :height(parametroi.world_height),width(parametroi.world_width)
     {
@@ -83,12 +107,11 @@ grid_world::grid_world(parameters parametroi)
     }
     //works because all the parameters are public haha to get fiunction
 
-int ** grid_world::create_map(){
-    int ** map = new int*[height];
+void grid_world::create_map(){
+    map = new int*[height];
     for(int i = 0; i < height; i ++){ //didnt use vector because size is static
         map[i] = new int[width]();
     }
-    return map;
 }
 
 
@@ -127,11 +150,12 @@ void self_driving_car::accelerate(){
     }
 }
 
+//meiwse taxitita
 void self_driving_car::decelerate(){
     if(speed == "HALF_SPEED"){
         speed = "STOPPED";
     }
     else if(speed == "FULL_SPEED"){
-        speed = "HAlF_SPEED";
+        speed = "HALF_SPEED";
     }
 }

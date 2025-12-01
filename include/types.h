@@ -28,12 +28,14 @@ class parameters{
         int num_traffic_lights;
         int max_simulation_ticks;
         int min_confidence_threshold;
-        //TODO i need to see how i can interpret the cords x and y starting and ending 
-    void print_help();
+        //TODO i need to see how i can interpret the cords x and y starting and ending (vector or queue)
+        vector <position> gps_targets;
+        void print_help() const ;
 
-    void extract_info(char ** argv,int argc);
+        void print_debug() const;
+        void extract_info(char ** argv,int argc);
 
-    parameters(); //we need two constructors one that is if they only gave the gps and one for if they gave other thigns also
+        parameters(); //we need two constructors one that is if they only gave the gps and one for if they gave other thigns also
 };
 
 class grid_world{
@@ -44,21 +46,9 @@ class grid_world{
     public:
         grid_world(parameters parametroi);
 
-        int ** create_map(){
-            int ** map = new int*[height];
-            for(int i = 0; i < height; i ++){ //didnt use vector because size is static
-                map[i] = new int[width]();
-            }
-            return map;
-        }
+        void create_map();
 
-        ~grid_world(){
-            for(int i = 0; i< height; i++){
-                delete[] map[i];
-            }
-            delete[] map;
-
-        }
+        ~grid_world();
 };
 
 /*
@@ -70,10 +60,9 @@ tick).
 
 class self_driving_car{
     private:
-        sensors sensores;
-        navigation_system ploigisi;
+        // sensors sensores;
+        // navigation_system ploigisi;
         string speed; 
-        //TODO pws tha kanw interpret to direction
     public:
         void accelerate();
         void decelerate();
@@ -141,6 +130,7 @@ class trafic_light:private object{ //TODO den mou aresei auti i ilopoiisi
 class moving_object:private object{
     private:
         string speed;
+        //? pws skata tha kanw interpret to direction
     public:
 
 };
