@@ -36,7 +36,7 @@ class grid_world{
         grid_world(parameters parametroi);
 
         int * create_map(){
-            
+
         }
 
 };
@@ -96,21 +96,7 @@ class trafic_light:private object{ //TODO den mou aresei auti i ilopoiisi
         int fanari_ticks;
     public:
 
-        void change_the_state(){ //skata ksexnaw oti den ginontai edw oi ilopoiiseis
-            if(fanari_ticks < 4){
-                katastasi = "RED";
-            }
-            else if(fanari_ticks > 4 && fanari_ticks < 12){
-                katastasi = "GREEN";
-            }
-            else if(fanari_ticks < 14){
-                katastasi = "YELLOW";
-            }
-            else{
-                fanari_ticks = 0;
-                katastasi = "RED";
-            }
-        }
+        void change_the_state();
 
 };
 
