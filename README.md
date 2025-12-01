@@ -6,17 +6,6 @@ This project is a simplified simulation of a self-driving car system in a grid-b
 
 ---
 
-## Project Structure
-
-antikemenostrafis_ergasia/
-├── include/
-│   └── types.h        # Class declarations
-├── src/
-│   ├── types.cpp      # Class implementations
-│   └── main.cpp       # Main simulation driver
-├── Makefile           # Build instructions
-└── README.md          # This file
-
 ### Key Classes
 
 - `parameters` — Holds simulation parameters (world size, object counts, GPS targets, etc.). Parses command-line arguments and provides debug printing.  
