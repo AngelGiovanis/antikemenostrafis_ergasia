@@ -1,8 +1,53 @@
 #include "../include/types.h"
 
 #include <vector>
+#include <string>
 
 //parameters class functions intrepretatinos
+
+
+void parameters::extract_info(char * argv,int argc){
+    for(int i = 1; i < argc; i+=2){
+        if(string(argv[i]) == "--seed"){
+            seed = atoi(argv[i + 1]);
+        }
+        if(string(argv[i]) == "−−dimX"){
+            world_width = atoi(argv[i + 1]);
+        }
+        if(string(argv[i]) == "−−dimY"){
+            world_height = atoi(argv[i + 1]);
+        }
+        if(string(argv[i]) == "--numMovingCars"){
+            num_moving_cars = atoi(argv[i + 1]);
+        }
+        if(string(argv[i]) == "--numMovingBikes"){
+            num_moving_cars = atoi(argv[i + 1]);
+        }
+        if(string(argv[i]) == "--numParkedCars"){
+            num_parked_cars = atoi(argv[i + 1]);
+        }
+        if(string(argv[i]) == "--numStopSigns"){
+            num_stop_signs = atoi(argv[i + 1]);
+        }
+        if(string(argv[i]) == "--numTrafficLights"){
+            num_traffic_lights = atoi(argv[i + 1]);
+        }
+        if(string(argv[i]) == "--simulationTicks"){
+            max_simulation_ticks = atoi(argv[i + 1]);
+        }
+        if(string(argv[i]) == "--minConfidenceThreshold"){
+            min_confidence_threshold = atoi(argv[i + 1]);
+        }
+
+        if(string(argv[i]) == "−−gps"){
+            //TODO edw prepei na dw pws tha kanw extract ploiroforia 
+        }
+        if(string(argv[i]) == "−−help"){
+            print_help();
+        }
+
+    }
+}
 
 parameters::parameters()
     :seed(),world_width(40),world_height(40),num_moving_cars(3),num_moving_bikes(4),num_parked_cars(5),num_stop_signs(2),num_traffic_lights(2),max_simulation_ticks(100),min_confidence_threshold(40)

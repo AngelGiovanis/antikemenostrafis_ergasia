@@ -45,7 +45,9 @@ class grid_world{
 class self_driving_car{
     private:
         sensors sensoras;
+        navigation_system ploigisi;
     public:
+        
 };
 
 class navigation_system{
@@ -63,6 +65,12 @@ class position{
         int x;
         int y;
     public:
+        int get_x(){
+            return x;
+        }
+        int get_y(){
+            return y;
+        }
         
 
 };
@@ -100,10 +108,21 @@ class trafic_light:private object{ //TODO den mou aresei auti i ilopoiisi
 
 };
 
+/*
+Το αυτόνομο όχημα τοποθετείται σε ένα κελί και έχει κατεύθυνση (direction)
+και ταχύτητα (speed). Οι καταστάσεις ταχύτητας είναι STOPPED (σταματημένο),
+HALF_SPEED (το ήμισυ της πλήρους ταχύτητας) ή FULL_SPEED (2 θέσεις ανά
+tick).
+*/
+
 class moving_object:private object{
     private:
-
+        string speed; 
+        //TODO pws tha kanw interpret to direction
     public:
+        void accelerate();
+        void decelerate();
+        void turn();
 };
 
 
