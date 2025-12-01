@@ -12,6 +12,8 @@ class world{
         bool finished;
         int current_ticks;
     public:
+
+        int update();
 };
 
 class parameters{
@@ -68,7 +70,7 @@ tick).
 
 class self_driving_car{
     private:
-        sensors sensoras;
+        sensors sensores;
         navigation_system ploigisi;
         string speed; 
         //TODO pws tha kanw interpret to direction
@@ -80,11 +82,6 @@ class self_driving_car{
 };
 
 class navigation_system{
-    public:
-    private:
-};
-
-class world_object{
     public:
     private:
 };

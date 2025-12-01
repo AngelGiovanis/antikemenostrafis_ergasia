@@ -7,13 +7,16 @@
 
 void parameters::extract_info(char ** argv,int argc){
     for(int i = 1; i < argc; i+=2){
+        if(string(argv[i]) == "--help"){
+            print_help();
+        }
         if(string(argv[i]) == "--seed"){
             seed = atoi(argv[i + 1]);
         }
-        if(string(argv[i]) == "−−dimX"){
+        if(string(argv[i]) == "--dimX"){
             world_width = atoi(argv[i + 1]);
         }
-        if(string(argv[i]) == "−−dimY"){
+        if(string(argv[i]) == "--dimY"){
             world_height = atoi(argv[i + 1]);
         }
         if(string(argv[i]) == "--numMovingCars"){
@@ -40,9 +43,6 @@ void parameters::extract_info(char ** argv,int argc){
 
         if(string(argv[i]) == "−−gps"){
             //TODO edw prepei na dw pws tha kanw extract ploiroforia 
-        }
-        if(string(argv[i]) == "−−help"){
-            print_help();
         }
 
     }
