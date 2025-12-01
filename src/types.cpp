@@ -6,7 +6,7 @@
 //parameters class functions intrepretatinos
 
 
-void parameters::extract_info(char * argv,int argc){
+void parameters::extract_info(char ** argv,int argc){
     for(int i = 1; i < argc; i+=2){
         if(string(argv[i]) == "--seed"){
             seed = atoi(argv[i + 1]);
@@ -21,7 +21,7 @@ void parameters::extract_info(char * argv,int argc){
             num_moving_cars = atoi(argv[i + 1]);
         }
         if(string(argv[i]) == "--numMovingBikes"){
-            num_moving_cars = atoi(argv[i + 1]);
+            num_moving_bikes = atoi(argv[i + 1]);
         }
         if(string(argv[i]) == "--numParkedCars"){
             num_parked_cars = atoi(argv[i + 1]);

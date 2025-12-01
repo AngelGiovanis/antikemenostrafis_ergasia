@@ -22,7 +22,7 @@ class parameters{
         //TODO i need to see how i can interpret the cords x and y starting and ending 
     void print_help();
 
-    void extract_info(char * argv);
+    void extract_info(char ** argv,int argc);
 
     parameters(); //we need two constructors one that is if they only gave the gps and one for if they gave other thigns also
 };
@@ -31,23 +31,45 @@ class grid_world{
     private:
         int height;
         int width;
-        int * map;
+        int ** map; //use it to access the array 
     public:
         grid_world(parameters parametroi);
 
-        int * create_map(){
-
+        int ** create_map(){
+            int ** map = new int*[height];
+            for(int i = 0; i < height; i ++){ //didnt use vector because size is static
+                map[i] = new int[width]();
+            }
+            return map;
         }
 
+        ~grid_world(){
+            for(int i = 0; i< height; i++){
+                delete[] map[i];
+            }
+            delete map;
+
+        }
 };
 
+/*
+Το αυτόνομο όχημα τοποθετείται σε ένα κελί και έχει κατεύθυνση (direction)
+και ταχύτητα (speed). Οι καταστάσεις ταχύτητας είναι STOPPED (σταματημένο),
+HALF_SPEED (το ήμισυ της πλήρους ταχύτητας) ή FULL_SPEED (2 θέσεις ανά
+tick).
+*/
 
 class self_driving_car{
     private:
         sensors sensoras;
         navigation_system ploigisi;
+        string speed; 
+        //TODO pws tha kanw interpret to direction
     public:
-        
+        void accelerate();
+        void decelerate();
+        void turn();
+
 };
 
 class navigation_system{
@@ -108,21 +130,13 @@ class trafic_light:private object{ //TODO den mou aresei auti i ilopoiisi
 
 };
 
-/*
-Το αυτόνομο όχημα τοποθετείται σε ένα κελί και έχει κατεύθυνση (direction)
-και ταχύτητα (speed). Οι καταστάσεις ταχύτητας είναι STOPPED (σταματημένο),
-HALF_SPEED (το ήμισυ της πλήρους ταχύτητας) ή FULL_SPEED (2 θέσεις ανά
-tick).
-*/
+
 
 class moving_object:private object{
     private:
-        string speed; 
-        //TODO pws tha kanw interpret to direction
+
     public:
-        void accelerate();
-        void decelerate();
-        void turn();
+
 };
 
 
