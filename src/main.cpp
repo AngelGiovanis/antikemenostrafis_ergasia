@@ -10,12 +10,24 @@ int main(int argc, char ** argv ){
 
     parameters p; //constructor arxikopoiei times 
     p.extract_info(argv,argc); //xristis tis allazei 
+    srand(p.seed);
+
+    self_driving_car amaksi(p);
 
     world kosmos;
 
-    while(kosmos.current_ticks < p.max_simulation_ticks && !kosmos.finished){
-        kosmos.update();
-    }
+    grid_world plegma(p);
+
+    // plegma.debug();
+
+    cout<<endl;
+    
+    kosmos.update(plegma,amaksi);
+
+    // while(kosmos.current_ticks < p.max_simulation_ticks && !kosmos.finished){
+    //     continue;
+        // kosmos.update();
+    // }
 
     //?while loop pou tha elegxei an current_ticks<max_ticks kai not_finished variable pou koitaei an self_driving_car exei kanei tin diadromi toy
 

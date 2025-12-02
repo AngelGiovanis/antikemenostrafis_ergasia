@@ -84,7 +84,6 @@ void parameters::extract_info(char ** argv,int argc){
 parameters::parameters()
     :seed(time(0)),world_width(40),world_height(40),num_moving_cars(3),num_moving_bikes(4),num_parked_cars(5),num_stop_signs(2),num_traffic_lights(2),max_simulation_ticks(100),min_confidence_threshold(40)
     {
-        srand(seed);
     }
 
 
@@ -120,15 +119,31 @@ grid_world::~grid_world(){
 grid_world::grid_world(parameters parametroi)
     :height(parametroi.world_height),width(parametroi.world_width)
     {
-
+        create_map();
     }
     //works because all the parameters are public haha to get fiunction
 
-void grid_world::create_map(){
-    map = new int*[height];
-    for(int i = 0; i < height; i ++){ //didnt use vector because size is static
-        map[i] = new int[width]();
+void grid_world::debug() const {
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            cout << map[i][j] << ' ';
+        }
+        cout << endl;
     }
+}
+
+void grid_world::create_map(){
+    map = new char*[height];
+    for(int i = 0; i < height; i ++){ //didnt use vector because size is static
+        map[i] = new char[width]();
+        for(int j = 0; j < width; j++){
+            map[i][j] = '.'; //arxikopoiei tis theseis me teleies
+        }
+    }
+}
+
+void grid_world::change_char(int x,int y, char c){
+    map[x][y] = c;
 }
 
 
@@ -177,6 +192,12 @@ void self_driving_car::decelerate(){
     }
 }
 
+self_driving_car::self_driving_car(parameters p){
+    thesi.set_positions(p.seed % p.world_height,p.seed % p.world_width);
+}
+
+
+
 //position
 position::position(const int &grammes,const int &stilles)
     : x(grammes),y(stilles)
@@ -187,6 +208,25 @@ position::position(const int &grammes,const int &stilles)
 position::position()
     :x(0),y(0){}
 
+int position::get_x() const{
+    return x;
+}
+
+int position::get_y() const{
+    return y;
+}
+
+void position::set_positions(int x1, int y1){
+    x = x1;
+    y = y1;
+}
+
+
 //gia world
 world::world()
     :finished(false),current_ticks(0){}
+
+void world::update(grid_world &plegma,self_driving_car &amaksi){
+    plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),'@');
+    plegma.debug();
+}
