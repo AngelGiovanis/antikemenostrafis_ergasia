@@ -23,12 +23,12 @@ class position{
 };
 
 class world{
-    private:
+
+    public:
         bool finished;
         int current_ticks;
-    public:
-
         int update();
+        world();
 };
 
 class parameters{

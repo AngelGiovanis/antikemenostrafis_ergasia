@@ -186,3 +186,7 @@ position::position(const int &grammes,const int &stilles)
 
 position::position()
     :x(0),y(0){}
+
+//gia world
+world::world()
+    :finished(false),current_ticks(0){}

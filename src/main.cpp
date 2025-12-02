@@ -11,7 +11,11 @@ int main(int argc, char ** argv ){
     parameters p; //constructor arxikopoiei times 
     p.extract_info(argv,argc); //xristis tis allazei 
 
-    p.print_debug();
+    world kosmos;
+
+    while(kosmos.current_ticks < p.max_simulation_ticks && !kosmos.finished){
+        kosmos.update();
+    }
 
     //?while loop pou tha elegxei an current_ticks<max_ticks kai not_finished variable pou koitaei an self_driving_car exei kanei tin diadromi toy
 
