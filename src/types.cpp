@@ -193,7 +193,7 @@ void self_driving_car::decelerate(){
 }
 
 self_driving_car::self_driving_car(parameters p){
-    thesi.set_positions(p.seed % p.world_height,p.seed % p.world_width);
+    thesi.set_positions(rand() % p.world_height,rand() % p.world_width);
 }
 
 

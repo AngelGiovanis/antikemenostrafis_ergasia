@@ -19,8 +19,6 @@ int main(int argc, char ** argv ){
     grid_world plegma(p);
 
     // plegma.debug();
-
-    cout<<endl;
     
     kosmos.update(plegma,amaksi);
 
