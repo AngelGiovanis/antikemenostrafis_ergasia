@@ -4,42 +4,45 @@
 #include <string>
 #include <vector>
 
-//parameters class functions intrepretatinos
-
-void parameters::print_debug() const {
-    cout << "Parameters Debug Info:" << endl;
-    cout << "  seed: " << seed << endl;
-    cout << "  world_width: " << world_width << endl;
-    cout << "  world_height: " << world_height << endl;
-    cout << "  num_moving_cars: " << num_moving_cars << endl;
-    cout << "  num_moving_bikes: " << num_moving_bikes << endl;
-    cout << "  num_parked_cars: " << num_parked_cars << endl;
-    cout << "  num_stop_signs: " << num_stop_signs << endl;
-    cout << "  num_traffic_lights: " << num_traffic_lights << endl;
-    cout << "  max_simulation_ticks: " << max_simulation_ticks << endl;
-    cout << "  min_confidence_threshold: " << min_confidence_threshold << endl;
-
-    cout << "  GPS targets:" << endl;
-    if (gps_targets.empty()) {
-        cout << "    (none)" << endl;
-    } else {
-        for (size_t i = 0; i < gps_targets.size(); ++i) {
-            const position &pos = gps_targets[i];
-            cout << "    [" << i << "] (" << pos.get_x() << ", " << pos.get_y() << ")" << endl;
-        }
+//self driving car 
+void self_driving_car::accelerate(){
+    if(speed == "STOPPED"){
+        speed = "HALF_SPEED";
     }
-} //chatgpt function to help me debug 
+    else if(speed == "HALF_SPEED"){
+        speed = "FULL_SPEED";
+    }
+}
 
-void parameters::extract_gps_targets( char ** argv, int index_of_gps_flag, int argc){
+
+void self_driving_car::decelerate(){
+    if(speed == "HALF_SPEED"){
+        speed = "STOPPED";
+    }
+    else if(speed == "FULL_SPEED"){
+        speed = "HALF_SPEED";
+    }
+}
+
+self_driving_car::self_driving_car(parameters p){
+    thesi.set_positions(rand() % p.world_height,rand() % p.world_width);
+}
+
+
+void self_driving_car::extract_gps_targets( char ** argv, int index_of_gps_flag, int argc){
     index_of_gps_flag++;
     while(index_of_gps_flag < argc){
         gps_targets.push_back(position(atoi(argv[index_of_gps_flag]),atoi(argv[index_of_gps_flag + 1])));
         index_of_gps_flag+=2;
     }
 }
+//parameters class functions intrepretatinos
 
 
-void parameters::extract_info(char ** argv,int argc){
+
+
+
+void parameters::extract_info(char ** argv,int argc,self_driving_car amaksi){
     for(int i = 1; i < argc; i+=2){
         if(string(argv[i]) == "--help"){
             print_help();
@@ -75,16 +78,16 @@ void parameters::extract_info(char ** argv,int argc){
             min_confidence_threshold = atoi(argv[i + 1]);
         }
         if(string(argv[i]) == "--gps"){
-            extract_gps_targets(argv,i,argc);
+            amaksi.extract_gps_targets(argv,i,argc);
         }
-
+        
     }
 }
 
 parameters::parameters()
-    :seed(time(0)),world_width(40),world_height(40),num_moving_cars(3),num_moving_bikes(4),num_parked_cars(5),num_stop_signs(2),num_traffic_lights(2),max_simulation_ticks(100),min_confidence_threshold(40)
-    {
-    }
+:seed(time(0)),world_width(40),world_height(40),num_moving_cars(3),num_moving_bikes(4),num_parked_cars(5),num_stop_signs(2),num_traffic_lights(2),max_simulation_ticks(100),min_confidence_threshold(40)
+{
+}
 
 
 void parameters::print_help() const{
@@ -113,15 +116,15 @@ grid_world::~grid_world(){
         delete[] map[i];
     }
     delete[] map;
-
+    
 }
 
 grid_world::grid_world(parameters parametroi)
-    :height(parametroi.world_height),width(parametroi.world_width)
-    {
-        create_map();
-    }
-    //works because all the parameters are public haha to get fiunction
+:height(parametroi.world_height),width(parametroi.world_width)
+{
+    create_map();
+}
+//works because all the parameters are public haha to get fiunction
 
 void grid_world::debug() const {
     for (int i = 0; i < height; i++) {
@@ -151,10 +154,10 @@ void grid_world::change_char(int x,int y, char c){
 
 
 trafic_light::trafic_light()
-    :katastasi("RED"),fanari_ticks(0)
-    {
-
-    }
+:katastasi("RED"),fanari_ticks(0)
+{
+    
+}
 
 void trafic_light::change_the_state(){ 
     if(fanari_ticks < 4){
@@ -172,35 +175,10 @@ void trafic_light::change_the_state(){
     }
 }
 
-//self driving car 
-void self_driving_car::accelerate(){
-    if(speed == "STOPPED"){
-        speed = "HALF_SPEED";
-    }
-    else if(speed == "HALF_SPEED"){
-        speed = "FULL_SPEED";
-    }
-}
-
-
-void self_driving_car::decelerate(){
-    if(speed == "HALF_SPEED"){
-        speed = "STOPPED";
-    }
-    else if(speed == "FULL_SPEED"){
-        speed = "HALF_SPEED";
-    }
-}
-
-self_driving_car::self_driving_car(parameters p){
-    thesi.set_positions(rand() % p.world_height,rand() % p.world_width);
-}
-
-
 
 //position
 position::position(const int &grammes,const int &stilles)
-    : x(grammes),y(stilles)
+: x(grammes),y(stilles)
     {
 
     }
@@ -226,11 +204,10 @@ void position::set_positions(int x1, int y1){
 world::world()
     :finished(false),current_ticks(0)
     {
-        
+
     }
 
 void world::update(grid_world &plegma,self_driving_car &amaksi){
     plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),'@');
     plegma.debug();
 }
-
