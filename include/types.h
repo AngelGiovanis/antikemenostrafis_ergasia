@@ -22,16 +22,16 @@ class position{
 
 class parameters{
     public:
-    int seed;
-    int world_width;
-    int world_height;
-    int num_moving_cars;
-    int num_moving_bikes;
-    int num_parked_cars;
-    int num_stop_signs;
-    int num_traffic_lights;
-    int max_simulation_ticks;
-    int min_confidence_threshold;
+        int seed;
+        int world_width;
+        int world_height;
+        int num_moving_cars;
+        int num_moving_bikes;
+        int num_parked_cars;
+        int num_stop_signs;
+        int num_traffic_lights;
+        int max_simulation_ticks;
+        int min_confidence_threshold;
     //TODO i need to see how i can interpret the cords x and y starting and ending (vector or queue)
     vector <position> gps_targets;
     
@@ -141,7 +141,7 @@ class world{
         bool finished;
         int current_ticks;
         void update(grid_world &plegma, self_driving_car &amaksi);
-        world();
+        world(); //initializes world,puts all characters inside 
 
 };
 

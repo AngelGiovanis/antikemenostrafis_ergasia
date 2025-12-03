@@ -224,9 +224,13 @@ void position::set_positions(int x1, int y1){
 
 //gia world
 world::world()
-    :finished(false),current_ticks(0){}
+    :finished(false),current_ticks(0)
+    {
+        
+    }
 
 void world::update(grid_world &plegma,self_driving_car &amaksi){
     plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),'@');
     plegma.debug();
 }
+
