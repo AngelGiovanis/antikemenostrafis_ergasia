@@ -25,11 +25,12 @@ void self_driving_car::decelerate(){
 }
 
 self_driving_car::self_driving_car(parameters p){
-    thesi.set_positions(rand() % p.world_height,rand() % p.world_width);
+    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
 }
 
 
-void self_driving_car::extract_gps_targets( char ** argv, int index_of_gps_flag, int argc){
+
+void parameters::extract_gps_targets( char ** argv, int index_of_gps_flag, int argc){
     index_of_gps_flag++;
     while(index_of_gps_flag < argc){
         gps_targets.push_back(position(atoi(argv[index_of_gps_flag]),atoi(argv[index_of_gps_flag + 1])));
@@ -42,7 +43,7 @@ void self_driving_car::extract_gps_targets( char ** argv, int index_of_gps_flag,
 
 
 
-void parameters::extract_info(char ** argv,int argc,self_driving_car amaksi){
+void parameters::extract_info(char ** argv,int argc){
     for(int i = 1; i < argc; i+=2){
         if(string(argv[i]) == "--help"){
             print_help();
@@ -78,7 +79,7 @@ void parameters::extract_info(char ** argv,int argc,self_driving_car amaksi){
             min_confidence_threshold = atoi(argv[i + 1]);
         }
         if(string(argv[i]) == "--gps"){
-            amaksi.extract_gps_targets(argv,i,argc);
+            this->extract_gps_targets(argv,i,argc);
         }
         
     }
@@ -109,6 +110,18 @@ void parameters::print_help() const{
     cout << "  ./oopp_proj_2025 --seed 12 --dimY 50 --gps 10 20 32 15" << endl;
 }
 
+int parameters::get_seed() const{
+    return seed;
+}
+
+int parameters::get_world_height() const{
+    return world_height;
+}
+        
+int parameters::get_world_width() const{
+    return world_width;
+}
+
 //gia gird_world
 
 grid_world::~grid_world(){
@@ -119,11 +132,11 @@ grid_world::~grid_world(){
     
 }
 
-grid_world::grid_world(parameters parametroi)
-:height(parametroi.world_height),width(parametroi.world_width)
-{
-    create_map();
-}
+grid_world::grid_world(const parameters &parametroi)
+    :height(parametroi.get_world_height()),width(parametroi.get_world_width())
+    {
+        create_map();
+    }
 //works because all the parameters are public haha to get fiunction
 
 void grid_world::debug() const {
@@ -201,13 +214,53 @@ void position::set_positions(int x1, int y1){
 
 
 //gia world
-world::world()
+void world::initialize_moving_objects(parameters * params){
+    moving_object * current;
+
+    for(int i = 0; i < params->get_moving_cars(); i++){
+        moving_objects.push_back(new car(*params));
+    }
+
+    for(int i = 0; i < params->get_moving_bikes(); i++){
+        moving_objects.push_back(new bike(*params));
+    }
+}
+world::world(parameters * params)
     :finished(false),current_ticks(0)
     {
-
+        initialize_moving_objects(params);
     }
 
 void world::update(grid_world &plegma,self_driving_car &amaksi){
     plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),'@');
     plegma.debug();
+}
+
+int world::get_ticks(){
+    return current_ticks;
+}
+
+bool world::is_finished(){
+    return finished;
+}
+
+
+//for car
+
+
+
+car::car(const parameters &p){
+    id = "car"+ to_string(car_count++);
+    glyph = 'C';
+    speed = "SLOW";
+    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
+}
+//for bike
+
+bike::bike(const parameters &p){
+    id = "bike" + to_string(bike_count);
+    glyph = 'B';
+    speed = "SLOW";
+    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
+
 }

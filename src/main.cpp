@@ -9,12 +9,16 @@ int main(int argc, char ** argv ){
     }
 
     parameters p; //constructor arxikopoiei times 
-    p.extract_info(argv,argc); //xristis tis allazei 
-    srand(p.seed);
 
+    
     self_driving_car amaksi(p);
 
-    world kosmos;
+    p.extract_info(argv,argc); //xristis tis allazei
+
+    srand(p.get_seed());
+
+
+    world kosmos(&p);
 
     grid_world plegma(p);
 
