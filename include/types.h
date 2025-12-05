@@ -107,9 +107,9 @@ class sensors{
 class object{
     protected:
         string id;
+    public:
         char glyph;
         position thesi;
-    public:
         void get_id(string &tautotita) const;
         void get_glyph(char &xaraktiras) const;
         void get_thesi(int &x, int &y) const;
@@ -120,7 +120,7 @@ class moving_object:public object{
     protected:
         string speed;
     public:
-       virtual void move();
+
 };
 
 class car: public moving_object{
@@ -130,7 +130,7 @@ class car: public moving_object{
         car(const parameters &p);
 };
 
-int car::car_count = 1;
+
 
 
 class bike: public moving_object{
@@ -140,7 +140,7 @@ class bike: public moving_object{
         bike(const parameters &p);
 };
 
-int bike::bike_count = 1;
+
 
 class traffic_sign:private object{
     private:
@@ -165,9 +165,9 @@ class world{
         bool finished;
         int current_ticks;
 
-        parameters * p;
+        // parameters * p;
 
-        grid_world * xartis;
+        // grid_world * xartis;
 
         
     public:

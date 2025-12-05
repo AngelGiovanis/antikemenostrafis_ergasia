@@ -122,6 +122,14 @@ int parameters::get_world_width() const{
     return world_width;
 }
 
+int parameters::get_moving_bikes() const{
+    return num_moving_bikes;
+}
+
+int parameters::get_moving_cars() const{
+    return num_moving_cars;
+}
+
 //gia gird_world
 
 grid_world::~grid_world(){
@@ -215,7 +223,6 @@ void position::set_positions(int x1, int y1){
 
 //gia world
 void world::initialize_moving_objects(parameters * params){
-    moving_object * current;
 
     for(int i = 0; i < params->get_moving_cars(); i++){
         moving_objects.push_back(new car(*params));
@@ -233,6 +240,9 @@ world::world(parameters * params)
 
 void world::update(grid_world &plegma,self_driving_car &amaksi){
     plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),'@');
+    for(auto obj: moving_objects){
+        plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
+    }
     plegma.debug();
 }
 
@@ -247,6 +257,7 @@ bool world::is_finished(){
 
 //for car
 
+int car::car_count = 1;
 
 
 car::car(const parameters &p){
@@ -264,3 +275,5 @@ bike::bike(const parameters &p){
     thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
 
 }
+
+int bike::bike_count = 1;
