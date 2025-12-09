@@ -1,8 +1,4 @@
-#include <vector>
 #include "../include/types.h"
-
-#include <string>
-#include <vector>
 
 //self driving car 
 void self_driving_car::accelerate(){
@@ -130,6 +126,19 @@ int parameters::get_moving_cars() const{
     return num_moving_cars;
 }
 
+int parameters::get_ticks() const {
+    return max_simulation_ticks;
+}
+
+int parameters::get_parked_cars() const{
+    return num_parked_cars;
+}
+
+int parameters::get_traffic_lights() const{
+    return num_traffic_lights;
+}
+
+
 //gia gird_world
 
 grid_world::~grid_world(){
@@ -145,7 +154,6 @@ grid_world::grid_world(const parameters &parametroi)
     {
         create_map();
     }
-//works because all the parameters are public haha to get fiunction
 
 void grid_world::debug() const {
     for (int i = 0; i < height; i++) {
@@ -174,10 +182,11 @@ void grid_world::change_char(int x,int y, char c){
 //gia traffic_light
 
 
-trafic_light::trafic_light()
-:katastasi("RED"),fanari_ticks(0)
+trafic_light::trafic_light(const parameters &p)
+    :katastasi("RED"),fanari_ticks(0)
 {
-    
+    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
+
 }
 
 void trafic_light::change_the_state(){ 
@@ -232,18 +241,32 @@ void world::initialize_moving_objects(parameters * params){
         moving_objects.push_back(new bike(*params));
     }
 }
-world::world(parameters * params)
-    :finished(false),current_ticks(0)
+
+void world::initialize_static_objects(parameters * params){
+
+    for(int i = 0; i < params->get_traffic_lights(); i++){
+        static_objects.push_back(new trafic_light(*params));
+    }
+}
+
+
+world::world(parameters * params,grid_world * plegma)
+    :finished(false),current_ticks(0),p(params),xartis(plegma)
     {
         initialize_moving_objects(params);
+        initialize_static_objects(params);
     }
 
 void world::update(grid_world &plegma,self_driving_car &amaksi){
+    current_ticks++;
     plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),'@');
     for(auto obj: moving_objects){
         plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
     }
-    plegma.debug();
+
+    for(auto obj: static_objects){
+        plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
+    }
 }
 
 int world::get_ticks(){
@@ -254,6 +277,8 @@ bool world::is_finished(){
     return finished;
 }
 
+world::~world(){
+}
 
 //for car
 

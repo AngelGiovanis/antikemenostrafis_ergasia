@@ -4,8 +4,10 @@
 #include <string>
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 
 using namespace std;
+
 
 class position{
     private:
@@ -48,6 +50,12 @@ class parameters{
         int get_moving_cars() const;
 
         int get_moving_bikes() const;
+
+        int get_ticks() const;
+
+        int get_parked_cars() const;
+
+        int get_traffic_lights() const;
 
         parameters(); //we need two constructors one that is if they only gave the gps and one for if they gave other thigns also
         void extract_gps_targets( char ** argv, int index_of_gps_flag, int argc);
@@ -142,20 +150,14 @@ class bike: public moving_object{
 
 
 
-class traffic_sign:private object{
-    private:
-        string message;
-    public:
-        void get_message(string &minima);
-};
 
-class trafic_light:private object{ //TODO den mou aresei auti i ilopoiisi
+class trafic_light:public object{ //TODO den mou aresei auti i ilopoiisi
     private:
         string katastasi;
         int fanari_ticks;
     public:
         void change_the_state();
-        trafic_light();
+        trafic_light(const parameters &p);
         ~trafic_light();
     
 };
@@ -165,21 +167,25 @@ class world{
         bool finished;
         int current_ticks;
 
-        // parameters * p;
+        parameters * p;
 
-        // grid_world * xartis;
+        grid_world * xartis;
 
         
     public:
         vector<moving_object*> moving_objects;
+
+        vector<object*> static_objects;
         bool is_finished();
         int get_ticks();
         void update(grid_world &plegma, self_driving_car &amaksi);
 
         void initialize_moving_objects(parameters * params);
+        void initialize_static_objects(parameters * params);
 
-        world(parameters * params); //initializes world,puts all characters inside 
-    
+        world(parameters * params,grid_world * plegma); //initializes world,puts all characters inside 
+
+        ~world();
 };
 
 

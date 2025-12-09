@@ -11,24 +11,26 @@ int main(int argc, char ** argv ){
     parameters p; //constructor arxikopoiei times 
 
     
+    
+    p.extract_info(argv,argc); //xristis tis allazei
+    srand(p.get_seed());
     self_driving_car amaksi(p);
 
-    p.extract_info(argv,argc); //xristis tis allazei
-
-    srand(p.get_seed());
-
-
-    world kosmos(&p);
 
     grid_world plegma(p);
 
+    world kosmos(&p,&plegma);
+
+
     // plegma.debug();
     
-    kosmos.update(plegma,amaksi);
+    kosmos.update(plegma,amaksi); //arxiko print
+    plegma.debug();
 
-    // while(kosmos.current_ticks < p.max_simulation_ticks && !kosmos.finished){
-    //     continue;
-        // kosmos.update();
+
+    // while(kosmos.get_ticks() < p.get_ticks() && !kosmos.is_finished()){
+
+    //     kosmos.update(plegma,amaksi);
     // }
 
     //?while loop pou tha elegxei an current_ticks<max_ticks kai not_finished variable pou koitaei an self_driving_car exei kanei tin diadromi toy
