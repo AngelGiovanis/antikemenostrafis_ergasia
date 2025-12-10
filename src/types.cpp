@@ -286,12 +286,17 @@ bool world::is_finished(){
 }
 
 world::~world(){
+    for(auto obj: moving_objects){
+        delete obj;
+    }
+    for (auto obj : static_objects) {
+        delete obj;
+    }
 }
 
 
 //for object
 void object::update(){
-
 }
 
 
@@ -307,6 +312,7 @@ car::car(const parameters &p){
     thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
 }
 //for bike
+int bike::bike_count = 1;
 
 bike::bike(const parameters &p){
     id = "bike" + to_string(bike_count);
@@ -315,5 +321,3 @@ bike::bike(const parameters &p){
     thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
 
 }
-
-int bike::bike_count = 1;
