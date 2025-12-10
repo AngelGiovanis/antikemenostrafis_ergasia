@@ -186,23 +186,28 @@ trafic_light::trafic_light(const parameters &p)
     :katastasi("RED"),fanari_ticks(0)
 {
     thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
-
+    update();
 }
 
-void trafic_light::change_the_state(){ 
+void trafic_light::update(){ 
     if(fanari_ticks < 4){
         katastasi = "RED";
+        glyph = 'R';
     }
     else if(fanari_ticks > 4 && fanari_ticks < 12){
         katastasi = "GREEN";
+        glyph = 'G';
     }
     else if(fanari_ticks < 14){
         katastasi = "YELLOW";
+        glyph = 'Y';
     }
     else{
         fanari_ticks = 0;
         katastasi = "RED";
+        glyph = 'R';
     }
+    fanari_ticks++;
 }
 
 
@@ -260,11 +265,14 @@ world::world(parameters * params,grid_world * plegma)
 void world::update(grid_world &plegma,self_driving_car &amaksi){
     current_ticks++;
     plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),'@');
-    for(auto obj: moving_objects){
+    for(auto obj: moving_objects){ //to chat me voitithise me to na kanw loop through objects se ena vector
         plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
     }
 
     for(auto obj: static_objects){
+        if(obj->glyph == 'R' || obj->glyph == 'Y' || obj->glyph == 'G'){
+            obj->update();
+        }
         plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
     }
 }
@@ -279,6 +287,13 @@ bool world::is_finished(){
 
 world::~world(){
 }
+
+
+//for object
+void object::update(){
+
+}
+
 
 //for car
 

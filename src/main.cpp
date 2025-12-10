@@ -28,11 +28,16 @@ int main(int argc, char ** argv ){
     plegma.debug();
 
 
-    // while(kosmos.get_ticks() < p.get_ticks() && !kosmos.is_finished()){
+    while(kosmos.get_ticks() < p.get_ticks() && !kosmos.is_finished()){
 
-    //     kosmos.update(plegma,amaksi);
-    // }
+        kosmos.update(plegma,amaksi);
+        
+        cout<<"---------------AAAAAAHhHHHHHHHHH-------------"<<endl;
+        
+        plegma.debug();
+    }
 
+    cout<<p.get_ticks();
     //?while loop pou tha elegxei an current_ticks<max_ticks kai not_finished variable pou koitaei an self_driving_car exei kanei tin diadromi toy
 
     return 0;

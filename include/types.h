@@ -118,10 +118,7 @@ class object{
     public:
         char glyph;
         position thesi;
-        void get_id(string &tautotita) const;
-        void get_glyph(char &xaraktiras) const;
-        void get_thesi(int &x, int &y) const;
-
+        virtual void update();
 };
 
 class moving_object:public object{
@@ -156,9 +153,10 @@ class trafic_light:public object{ //TODO den mou aresei auti i ilopoiisi
         string katastasi;
         int fanari_ticks;
     public:
-        void change_the_state();
+        void update();
         trafic_light(const parameters &p);
         ~trafic_light();
+
     
 };
 
