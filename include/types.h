@@ -21,7 +21,6 @@ class position{
         void set_positions(int x1, int y1);
 };
 
-
 class parameters{
     private:
         int seed;
@@ -57,11 +56,12 @@ class parameters{
 
         int get_traffic_lights() const;
 
+        int get_traffic_signs() const;
+
         parameters(); //we need two constructors one that is if they only gave the gps and one for if they gave other thigns also
         void extract_gps_targets( char ** argv, int index_of_gps_flag, int argc);
     };
     
-
 class grid_world{
     private:
         int height;
@@ -79,13 +79,6 @@ class grid_world{
         
         ~grid_world();
 };
-
-/*
-Το αυτόνομο όχημα τοποθετείται σε ένα κελί και έχει κατεύθυνση (direction)
-και ταχύτητα (speed). Οι καταστάσεις ταχύτητας είναι STOPPED (σταματημένο),
-HALF_SPEED (το ήμισυ της πλήρους ταχύτητας) ή FULL_SPEED (2 θέσεις ανά
-tick).
-*/
 
 class self_driving_car{
     private:
@@ -105,12 +98,10 @@ class navigation_system{
     private:
 };
 
-
 class sensors{
     private:
     public:
 };
-
 
 class object{
     protected:
@@ -135,9 +126,6 @@ class car: public moving_object{
         car(const parameters &p);
 };
 
-
-
-
 class bike: public moving_object{
     private:
         static int bike_count;
@@ -145,8 +133,12 @@ class bike: public moving_object{
         bike(const parameters &p);
 };
 
-
-
+class parked_car : public object{
+    private:
+        static int parked_car_count;
+    public:
+        parked_car(const parameters &p);
+};
 
 class trafic_light:public object{ //TODO den mou aresei auti i ilopoiisi
     private:
@@ -158,6 +150,14 @@ class trafic_light:public object{ //TODO den mou aresei auti i ilopoiisi
         ~trafic_light();
 
     
+};
+
+class traffic_sign: public object{
+    private:
+        static int traffic_signs_count;
+        string xaraktirismos;
+    public:
+        traffic_sign(const parameters &p);
 };
 
 class world{

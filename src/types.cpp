@@ -10,7 +10,6 @@ void self_driving_car::accelerate(){
     }
 }
 
-
 void self_driving_car::decelerate(){
     if(speed == "HALF_SPEED"){
         speed = "STOPPED";
@@ -24,7 +23,7 @@ self_driving_car::self_driving_car(parameters p){
     thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
 }
 
-
+//parameters class functions intrepretatinos
 
 void parameters::extract_gps_targets( char ** argv, int index_of_gps_flag, int argc){
     index_of_gps_flag++;
@@ -33,11 +32,6 @@ void parameters::extract_gps_targets( char ** argv, int index_of_gps_flag, int a
         index_of_gps_flag+=2;
     }
 }
-//parameters class functions intrepretatinos
-
-
-
-
 
 void parameters::extract_info(char ** argv,int argc){
     for(int i = 1; i < argc; i+=2){
@@ -138,6 +132,10 @@ int parameters::get_traffic_lights() const{
     return num_traffic_lights;
 }
 
+int parameters::get_traffic_signs() const{
+    return num_stop_signs;
+}
+
 
 //gia gird_world
 
@@ -179,8 +177,108 @@ void grid_world::change_char(int x,int y, char c){
 }
 
 
-//gia traffic_light
 
+
+//position
+position::position(const int &grammes,const int &stilles)
+: x(grammes),y(stilles)
+{
+    
+}
+
+position::position()
+:x(0),y(0){}
+
+int position::get_x() const{
+    return x;
+}
+
+int position::get_y() const{
+    return y;
+}
+
+void position::set_positions(int x1, int y1){
+    x = x1;
+    y = y1;
+}
+
+
+//gia world
+void world::initialize_moving_objects(parameters * params){
+    
+    for(int i = 0; i < params->get_moving_cars(); i++){
+        moving_objects.push_back(new car(*params));
+    }
+    
+    for(int i = 0; i < params->get_moving_bikes(); i++){
+        moving_objects.push_back(new bike(*params));
+    }
+}
+
+void world::initialize_static_objects(parameters * params){
+    
+    for(int i = 0; i < params->get_traffic_lights(); i++){
+        static_objects.push_back(new trafic_light(*params));
+    }
+    for(int i = 0; i < params->get_parked_cars(); i++){
+        static_objects.push_back(new parked_car(*params));
+    }
+    for(int i = 0;i < params->get_traffic_signs(); i++){
+        static_objects.push_back(new traffic_sign(*params));
+    }
+}
+
+
+world::world(parameters * params,grid_world * plegma)
+:finished(false),current_ticks(0),p(params),xartis(plegma)
+{
+    initialize_moving_objects(params);
+    initialize_static_objects(params);
+}
+
+void world::update(grid_world &plegma,self_driving_car &amaksi){
+    current_ticks++;
+    plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),'@');
+    for(auto obj: moving_objects){ //to chat me voitithise me to na kanw loop through objects se ena vector
+        plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
+    }
+    
+    for(auto obj: static_objects){
+        if(obj->glyph == 'R' || obj->glyph == 'Y' || obj->glyph == 'G'){
+            obj->update();
+        }
+        plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
+    }
+}
+
+int world::get_ticks(){
+    return current_ticks;
+}
+
+bool world::is_finished(){
+    return finished;
+}
+
+world::~world(){
+    for(auto obj: moving_objects){
+        delete obj;
+    }
+    moving_objects.clear();
+    
+    
+    for (auto obj : static_objects) {
+        delete obj;
+    }
+    
+    static_objects.clear();
+}
+
+
+//for object
+void object::update(){
+}
+
+//gia traffic_light
 
 trafic_light::trafic_light(const parameters &p)
     :katastasi("RED"),fanari_ticks(0)
@@ -210,100 +308,24 @@ void trafic_light::update(){
     fanari_ticks++;
 }
 
-
-//position
-position::position(const int &grammes,const int &stilles)
-: x(grammes),y(stilles)
-    {
-
-    }
-
-position::position()
-    :x(0),y(0){}
-
-int position::get_x() const{
-    return x;
+//for parked_car
+parked_car::parked_car(const parameters &p){
+    id = "parked_car" + to_string(parked_car_count++);
+    glyph = 'P';
+    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
 }
 
-int position::get_y() const{
-    return y;
+int parked_car::parked_car_count = 1;
+
+//for traffic lights 
+traffic_sign::traffic_sign(const parameters &p){
+    id = "traffic_sign" + to_string(traffic_signs_count++);
+    xaraktirismos = "STOP";
+    glyph = 'S';
+    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
 }
 
-void position::set_positions(int x1, int y1){
-    x = x1;
-    y = y1;
-}
-
-
-//gia world
-void world::initialize_moving_objects(parameters * params){
-
-    for(int i = 0; i < params->get_moving_cars(); i++){
-        moving_objects.push_back(new car(*params));
-    }
-
-    for(int i = 0; i < params->get_moving_bikes(); i++){
-        moving_objects.push_back(new bike(*params));
-    }
-}
-
-void world::initialize_static_objects(parameters * params){
-
-    for(int i = 0; i < params->get_traffic_lights(); i++){
-        static_objects.push_back(new trafic_light(*params));
-    }
-}
-
-
-world::world(parameters * params,grid_world * plegma)
-    :finished(false),current_ticks(0),p(params),xartis(plegma)
-    {
-        initialize_moving_objects(params);
-        initialize_static_objects(params);
-    }
-
-void world::update(grid_world &plegma,self_driving_car &amaksi){
-    current_ticks++;
-    plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),'@');
-    for(auto obj: moving_objects){ //to chat me voitithise me to na kanw loop through objects se ena vector
-        plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
-    }
-
-    for(auto obj: static_objects){
-        if(obj->glyph == 'R' || obj->glyph == 'Y' || obj->glyph == 'G'){
-            obj->update();
-        }
-        plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
-    }
-}
-
-int world::get_ticks(){
-    return current_ticks;
-}
-
-bool world::is_finished(){
-    return finished;
-}
-
-world::~world(){
-    for(auto obj: moving_objects){
-        delete obj;
-    }
-    moving_objects.clear();
-    
-    
-    for (auto obj : static_objects) {
-        delete obj;
-    }
-
-    static_objects.clear();
-}
-
-
-//for object
-void object::update(){
-}
-
+int traffic_sign::traffic_signs_count = 1;
 
 //for car
 
