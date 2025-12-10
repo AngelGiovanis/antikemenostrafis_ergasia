@@ -163,11 +163,16 @@ void grid_world::debug() const {
 }
 
 void grid_world::create_map(){
+    height++;
+    width++;
     map = new char*[height];
     for(int i = 0; i < height; i ++){ //didnt use vector because size is static
         map[i] = new char[width]();
         for(int j = 0; j < width; j++){
             map[i][j] = '.'; //arxikopoiei tis theseis me teleies
+            if(j == 0 || i ==0 || j == width - 1 || i == width -1){
+                map[i][j] = 'X';
+            }
         }
     }
 }
