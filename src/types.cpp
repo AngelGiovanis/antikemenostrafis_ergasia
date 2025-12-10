@@ -289,9 +289,14 @@ world::~world(){
     for(auto obj: moving_objects){
         delete obj;
     }
+    moving_objects.clear();
+    
+    
     for (auto obj : static_objects) {
         delete obj;
     }
+
+    static_objects.clear();
 }
 
 
