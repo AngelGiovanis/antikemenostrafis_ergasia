@@ -114,8 +114,11 @@ class object{
 
 class moving_object:public object{
     protected:
-        string speed;
+        grid_world *plegma;
     public:
+        virtual void move();
+        moving_object(grid_world* grid);
+
 
 };
 
@@ -123,14 +126,15 @@ class car: public moving_object{
     private:
         static int car_count;
     public:
-        car(const parameters &p);
+        car(const parameters &p,grid_world* xartis);
+        void move();
 };
 
 class bike: public moving_object{
     private:
         static int bike_count;
     public:
-        bike(const parameters &p);
+        bike(const parameters &p,grid_world* xartis);
 };
 
 class parked_car : public object{

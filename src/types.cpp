@@ -212,18 +212,18 @@ void position::set_positions(int x1, int y1){
 void world::initialize_moving_objects(parameters * params){
     
     for(int i = 0; i < params->get_moving_cars(); i++){
-        moving_objects.push_back(new car(*params));
+        moving_objects.push_back(new car(*params,xartis));
     }
     
     for(int i = 0; i < params->get_moving_bikes(); i++){
-        moving_objects.push_back(new bike(*params));
+        moving_objects.push_back(new bike(*params,xartis));
     }
 }
 
 void world::initialize_static_objects(parameters * params){
     
     for(int i = 0; i < params->get_traffic_lights(); i++){
-        static_objects.push_back(new trafic_light(*params));
+        static_objects.push_back(new trafic_light(*params ));
     }
     for(int i = 0; i < params->get_parked_cars(); i++){
         static_objects.push_back(new parked_car(*params));
@@ -283,12 +283,17 @@ world::~world(){
 void object::update(){
 }
 
+//for moving_object
+moving_object::moving_object(grid_world * grid){
+    plegma = grid;
+}
+
 //gia traffic_light
 
 trafic_light::trafic_light(const parameters &p)
     :katastasi("RED"),fanari_ticks(0)
 {
-    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
+    thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2)); //-2 ensures the object is not initialized at the edges
     update();
 }
 
@@ -317,7 +322,7 @@ void trafic_light::update(){
 parked_car::parked_car(const parameters &p){
     id = "parked_car" + to_string(parked_car_count++);
     glyph = 'P';
-    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
+    thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
 }
 
 int parked_car::parked_car_count = 1;
@@ -327,7 +332,7 @@ traffic_sign::traffic_sign(const parameters &p){
     id = "traffic_sign" + to_string(traffic_signs_count++);
     xaraktirismos = "STOP";
     glyph = 'S';
-    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
+    thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
 }
 
 int traffic_sign::traffic_signs_count = 1;
@@ -337,19 +342,21 @@ int traffic_sign::traffic_signs_count = 1;
 int car::car_count = 1;
 
 
-car::car(const parameters &p){
-    id = "car"+ to_string(car_count++);
-    glyph = 'C';
-    speed = "SLOW";
-    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
-}
+car::car(const parameters &p,grid_world* grid)
+    :moving_object(grid)
+    {
+        plegma = grid;
+        id = "car"+ to_string(car_count++);
+        glyph = 'C';
+        thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
+    }
 //for bike
 int bike::bike_count = 1;
 
-bike::bike(const parameters &p){
-    id = "bike" + to_string(bike_count);
-    glyph = 'B';
-    speed = "SLOW";
-    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
+bike::bike(const parameters &p,grid_world* grid)
+        :moving_object(grid){
+        id = "bike" + to_string(bike_count);
+        glyph = 'B';
+        thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
+    }
 
-}

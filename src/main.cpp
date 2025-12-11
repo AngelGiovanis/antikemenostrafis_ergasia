@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include  "../include/types.h"
+#include <chrono>
+#include <thread>
 
 
 int main(int argc, char ** argv ){
@@ -35,6 +37,7 @@ int main(int argc, char ** argv ){
         cout<<kosmos.get_ticks()<<endl;
         
         plegma.debug();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000)); //to check the implementation
     }
 
     cout<<p.get_ticks()<<endl;
