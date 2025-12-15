@@ -26,17 +26,17 @@ int main(int argc, char ** argv ){
 
     // plegma.debug();
     
-    kosmos.update(plegma,amaksi); //arxiko print
-    //plegma.debug(); idio me kosmos.update nomizw
+    kosmos.update(plegma,amaksi); 
+    plegma.debug(); //arxiko print
 
 
     while(kosmos.get_ticks() < p.get_ticks() && !kosmos.is_finished()){
 
-        kosmos.update(plegma,amaksi); //printarei kosmo 
+        kosmos.update(plegma,amaksi); //kanei update sto grid tin current thesi twn pragmatwn 
         
         cout<<kosmos.get_ticks()<<endl; //printarei current tick 
         
-        plegma.debug();
+        plegma.debug(); //printarei kosmo 
         std::this_thread::sleep_for(std::chrono::milliseconds(1000)); //to check the implementation
     }
 

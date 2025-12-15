@@ -210,6 +210,10 @@ void position::set_positions(int x1, int y1){
 void position::set_y(int y1){
     y = y1;
 }
+void position::set_x(int x1){
+    x = x1;
+}
+
 
 
 //gia world
@@ -291,6 +295,7 @@ void object::update(){
 //for moving_object
 moving_object::moving_object(grid_world * grid){
     plegma = grid;
+    current_ticks = 0;
 }
 
 void moving_object::move(){
@@ -310,7 +315,7 @@ void trafic_light::update(){
         katastasi = "RED";
         glyph = 'R';
     }
-    else if(fanari_ticks > 4 && fanari_ticks < 12){
+    else if(fanari_ticks < 12){
         katastasi = "GREEN";
         glyph = 'G';
     }
@@ -359,16 +364,16 @@ car::car(const parameters &p , grid_world *xartis)
     }
 
 void car::move(){
-    if(thesi.get_y() - 2 != 0 ){
+    if(thesi.get_x() - 2 > 0 ){
         plegma->change_char(thesi.get_x(),thesi.get_y(),'.'); // kane to current teleia
         
-        thesi.set_y(thesi.get_y() - 2);
+        thesi.set_x(thesi.get_x() - 2);
 
         //kane to apo panw teleia
         plegma->change_char(thesi.get_x(),thesi.get_y(),'C');
     }
     else{
-
+        //TODO simainei oti einai sto edge ara prepei na allaksei direction
     }
 }
 
@@ -384,10 +389,10 @@ bike::bike(const parameters &p,grid_world* grid)
     }
 
 void bike::move(){
-    if(thesi.get_y() - 1 != 0){
+    if(thesi.get_x() - 1 != 0){
         plegma->change_char(thesi.get_x(),thesi.get_y(),'.'); // kane to current teleia
         
-        thesi.set_y(thesi.get_y() - 1);
+        thesi.set_x(thesi.get_x() - 1);
 
         //kane to apo panw teleia
         plegma->change_char(thesi.get_x(),thesi.get_y(),'B');

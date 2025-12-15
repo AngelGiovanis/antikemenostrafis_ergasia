@@ -20,6 +20,7 @@ class position{
         position();
         void set_positions(int x1, int y1);
         void set_y(int y1);
+        void set_x(int x1);
 };
 
 class parameters{
@@ -113,9 +114,10 @@ class object{
         virtual void update();
 };
 
-class moving_object:public object{
+class moving_object:public object{ //TODO i need to think for the implementation of direction
     protected:
         grid_world *plegma;
+        int current_ticks;
     public:
         virtual void move();
         moving_object(grid_world* grid);
