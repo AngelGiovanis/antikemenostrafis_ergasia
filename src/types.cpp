@@ -207,6 +207,10 @@ void position::set_positions(int x1, int y1){
     y = y1;
 }
 
+void position::set_y(int y1){
+    y = y1;
+}
+
 
 //gia world
 void world::initialize_moving_objects(parameters * params){
@@ -245,7 +249,8 @@ void world::update(grid_world &plegma,self_driving_car &amaksi){
     current_ticks++;
     plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),'@');
     for(auto obj: moving_objects){ //to chat me voitithise me to na kanw loop through objects se ena vector
-        plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
+        // plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
+        obj->move();
     }
     
     for(auto obj: static_objects){
@@ -286,6 +291,9 @@ void object::update(){
 //for moving_object
 moving_object::moving_object(grid_world * grid){
     plegma = grid;
+}
+
+void moving_object::move(){
 }
 
 //gia traffic_light
@@ -342,14 +350,29 @@ int traffic_sign::traffic_signs_count = 1;
 int car::car_count = 1;
 
 
-car::car(const parameters &p,grid_world* grid)
-    :moving_object(grid)
+car::car(const parameters &p , grid_world *xartis)
+    :moving_object(xartis)
     {
-        plegma = grid;
         id = "car"+ to_string(car_count++);
         glyph = 'C';
         thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
     }
+
+void car::move(){
+    if(thesi.get_y() - 2 != 0 ){
+        plegma->change_char(thesi.get_x(),thesi.get_y(),'.'); // kane to current teleia
+        
+        thesi.set_y(thesi.get_y() - 2);
+
+        //kane to apo panw teleia
+        plegma->change_char(thesi.get_x(),thesi.get_y(),'C');
+    }
+    else{
+
+    }
+}
+
+
 //for bike
 int bike::bike_count = 1;
 
@@ -359,4 +382,18 @@ bike::bike(const parameters &p,grid_world* grid)
         glyph = 'B';
         thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
     }
+
+void bike::move(){
+    if(thesi.get_y() - 1 != 0){
+        plegma->change_char(thesi.get_x(),thesi.get_y(),'.'); // kane to current teleia
+        
+        thesi.set_y(thesi.get_y() - 1);
+
+        //kane to apo panw teleia
+        plegma->change_char(thesi.get_x(),thesi.get_y(),'B');
+    }
+    else{
+
+    }
+}
 

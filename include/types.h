@@ -19,6 +19,7 @@ class position{
         position(const int &grammes,const int &stilles);
         position();
         void set_positions(int x1, int y1);
+        void set_y(int y1);
 };
 
 class parameters{
@@ -126,7 +127,7 @@ class car: public moving_object{
     private:
         static int car_count;
     public:
-        car(const parameters &p,grid_world* xartis);
+        car(const parameters &p,grid_world *xartis);
         void move();
 };
 
@@ -135,6 +136,7 @@ class bike: public moving_object{
         static int bike_count;
     public:
         bike(const parameters &p,grid_world* xartis);
+        void move();
 };
 
 class parked_car : public object{
