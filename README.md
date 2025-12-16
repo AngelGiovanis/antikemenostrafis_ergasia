@@ -1,25 +1,52 @@
-# Self-Driving Car Simulation (C++)
+README
 
-## Overview
+1. Συμμετέχων:
+   - Angel Giovanis, ΑΜ: [βάλε εδώ τον αριθμό μητρώου σου]
 
-This project is a simplified simulation of a self-driving car system in a grid-based world. The simulation includes moving cars, bikes, parked cars, traffic lights, and stop signs. Users can configure the world, number of objects, and GPS waypoints through command-line arguments.
+2. Εντολή μεταγλώττισης:
+   make
 
----
+3. Εντολή εκτέλεσης:
+   ./simulation [flags]
 
-### Key Classes
+4. Μεθοδολογία Υλοποίησης:
 
-- `parameters` — Holds simulation parameters (world size, object counts, GPS targets, etc.). Parses command-line arguments and provides debug printing.  
-- `grid_world` — Represents the 2D grid map and dynamically allocates a 2D array.  
-- `position` — Stores `(x, y)` coordinates.  
-- `self_driving_car` — Represents a moving car with speed and navigation behavior.  
-- `trafic_light` — Represents a traffic light with state changes over simulation ticks.  
-- `object` — Base class for static/dynamic objects like traffic signs, lights, and cars.  
+   - Χάρτης (grid_world): Υλοποιήθηκε ως δισδιάστατος δυναμικός πίνακας αντικειμένων (object*** map). 
+     Οι ακμές του χάρτη προστατεύονται με αντικείμενα τύπου wall.
 
----
+   - Αντικείμενα (object και παράγωγα): 
+     Υπάρχει βασική κλάση object με θέση (position) και σύμβολο (glyph). 
+     Οι κινούμενοι τύποι (moving_object, car, bike, self_driving_car) κληρονομούν από αυτή και υλοποιούν 
+     move() με βάση την τρέχουσα θέση και ταχύτητα. Οι στατικοί τύποι είναι wall, parked_car, traffic_sign, trafic_light.
 
-## Build Instructions
+   - Αισθητήρες (sensors): 
+     Υλοποιήθηκαν lidar_sensor και radar_sensor ως παράγωγα της κλάσης sensors. 
+     Οι αισθητήρες παίρνουν τον χάρτη και τη θέση του οχήματος και επιστρέφουν πληροφορίες για αντικείμενα γύρω από το όχημα 
+     (τύπο αντικειμένου, ταχύτητα, απόσταση). Οι υπολογισμοί βασίζονται στη Manhattan απόσταση για το lidar και έλεγχο 
+     μπροστά στο όχημα για το radar.
 
-Use the provided Makefile. From the project root:
+   - Κλάση self_driving_car:
+     Περιλαμβάνει μέθοδοι για επιτάχυνση, επιβράδυνση και αλλαγή κατεύθυνσης. 
+     Το όχημα τοποθετείται σε τυχαία θέση εντός του χάρτη.
 
-```bash
-make
+   - Κλάση world:
+     Διαχειρίζεται την προσομοίωση, κρατάει τα vectors moving_objects και static_objects, 
+     και ενημερώνει το χάρτη κάθε tick με τις θέσεις όλων των αντικειμένων. 
+     Περιλαμβάνει μεθόδους initialize_moving_objects και initialize_static_objects για αρχικοποίηση.
+
+   - Παραδοχές:
+     - Τα αντικείμενα τοποθετούνται τυχαία εντός του χάρτη εκτός των ακμών.
+     - Τα κινούμενα αντικείμενα κινούνται προς μία κατεύθυνση, χωρίς αλλαγή κατεύθυνσης σε αυτό το στάδιο.
+     - Τα lights ακολουθούν σταθερή αλληλουχία RED -> GREEN -> YELLOW -> RED.
+     - Το lidar βλέπει ένα τετράγωνο 9x9 γύρω από το όχημα, το radar 12 μπροστά.
+     - Οι ταχύτητες των οχημάτων ορίζονται ως "STOPPED", "HALF_SPEED", "FULL_SPEED".
+
+5. Βήματα εκτέλεσης:
+
+   1. Μεταγλώττιση:
+      make
+
+   2. Εκτέλεση παραδείγματος:
+      ./simulation --dimX 40 --dimY 40 --numMovingCars 3 --numMovingBikes 2 --numParkedCars 5 --numTrafficLights 2 --numStopSigns 2 --simulationTicks 100 --gps 10 20 30 15
+
+   Σημείωση: Όλα τα flags είναι προαιρετικά και έχουν default τιμές, όπως καθορίζεται στην κλάση parameters.

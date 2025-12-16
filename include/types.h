@@ -111,6 +111,8 @@ class lidar_sensor : public sensors{
     private:
         vector<int> positions;
         vector<char> objects;
+        vector<int> accuracy;
+
     public:
         lidar_sensor(object *** map,position * pos,string tax,string conf);
         sensors extract_info();
@@ -120,7 +122,12 @@ class radar_sensor : public sensors{
     private:
         vector<int> positions;
         vector<char> objects;
+        vector<string> object_speed;
+        //TODO KATEFTHINSI 
+        vector<int> accuracy;
     public:
+        radar_sensor(object *** map,position * pos,string tax,string conf);
+        sensors extract_info();
 
 };
 
@@ -175,11 +182,11 @@ class moving_object:public object{ //TODO i need to think for the implementation
     protected:
         grid_world *plegma;
         int current_ticks;
+        string speed;
     public:
         virtual void move();
         moving_object(grid_world* grid);
-
-
+        string get_speed();
 };
 
 class car: public moving_object{

@@ -335,18 +335,36 @@ sensors lidar_sensor::extract_info(){
                         objects.push_back('S');
                     }
                     positions.push_back((i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y())); //manhattan distance 
+                    //TODO na kanw implement to accuracy
                 }
             }
         }
     }
 }
 
-sensors radar_sensor::radar_sensor(){
+//radar sensor love 
 
-}
+radar_sensor::radar_sensor(object *** xartis , position * posi , string tax , string conf){
+    map = xartis;
+    thesi_amaksiou = posi;
+    speed = tax;
+    confidence = conf;
+} //TODO tha to allaksw kai tha valw ton idio constructor giati kanei tin idia douleia 
 
 sensors radar_sensor::extract_info(){
-
+    moving_object* pointer;
+    int i = thesi_amaksiou->get_x();
+    for(int j = thesi_amaksiou->get_y() + 1; i < thesi_amaksiou->get_x() + 4; i++){
+        if (i >= 0 && i < 40 && j >= 0 && j < 40 && map[i][j] && map[i][j]->glyph != 'X') { //gia na min faw segfault gia na min kanw access nullptr kai min kanw access edge X :p
+            if(map[i][j] && map[i][j]->glyph != 'X' && (map[i][j]->glyph == 'B' || map[i][j]->glyph == 'C')){
+                positions.push_back((i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y())); //manhattan distance 
+                pointer = static_cast<moving_object*>(map[i][j]);
+                object_speed.push_back(pointer->get_speed());
+                //TODO katefthinsi
+                //TODO vevaiotita
+            }
+        }
+    }
 }
 
 //for moving_object
@@ -357,6 +375,11 @@ moving_object::moving_object(grid_world * grid){
 
 void moving_object::move(){
 }
+
+string moving_object::get_speed(){
+    return speed;
+}
+
 
 //gia traffic_light
 
@@ -415,6 +438,7 @@ int car::car_count = 1;
 car::car(const parameters &p , grid_world * xartis)
         :moving_object(xartis)
     {
+        speed = "FULL_SPEED";
         id = "car"+ to_string(car_count++);
         glyph = 'C';
         thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
@@ -440,10 +464,11 @@ int bike::bike_count = 1;
 
 bike::bike(const parameters &p,grid_world* grid)
         :moving_object(grid){
-        id = "bike" + to_string(bike_count);
-        glyph = 'B';
-        thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
-    }
+            id = "bike" + to_string(bike_count);
+            glyph = 'B';
+            thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
+            speed = "HALF_SPEED";
+        }
 
 void bike::move(){
     if(thesi.get_x() - 1 != 0){
