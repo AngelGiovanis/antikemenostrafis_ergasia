@@ -305,13 +305,12 @@ void self_driving_car::decelerate(){
 }
 
 self_driving_car::self_driving_car(parameters p){
-    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
+    thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
     glyph = '@';
 }
 
 //for sensors 
 sensors sensors::extract_info(){
-
 }
 
 
@@ -335,11 +334,19 @@ sensors lidar_sensor::extract_info(){
                     else{
                         objects.push_back('S');
                     }
-                    positions.push_back(&map[i][j]->thesi);
+                    positions.push_back((i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y())); //manhattan distance 
                 }
             }
         }
     }
+}
+
+sensors radar_sensor::radar_sensor(){
+
+}
+
+sensors radar_sensor::extract_info(){
+
 }
 
 //for moving_object

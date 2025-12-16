@@ -109,7 +109,7 @@ class sensors{
 
 class lidar_sensor : public sensors{
     private:
-        vector<position*> positions;
+        vector<int> positions;
         vector<char> objects;
     public:
         lidar_sensor(object *** map,position * pos,string tax,string conf);
@@ -118,7 +118,8 @@ class lidar_sensor : public sensors{
 
 class radar_sensor : public sensors{
     private:
-
+        vector<int> positions;
+        vector<char> objects;
     public:
 
 };
