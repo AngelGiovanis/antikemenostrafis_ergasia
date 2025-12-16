@@ -19,8 +19,8 @@ class position{
         position(const int &grammes,const int &stilles);
         position();
         void set_positions(int x1, int y1);
-        void set_y(int y1);
-        void set_x(int x1);
+        void set_y(const int y1);
+        void set_x(const int x1);
 };
 
 class parameters{
@@ -63,48 +63,7 @@ class parameters{
         parameters(); //we need two constructors one that is if they only gave the gps and one for if they gave other thigns also
         void extract_gps_targets( char ** argv, int index_of_gps_flag, int argc);
     };
-    
-class grid_world{
-    private:
-        int height;
-        int width;
-        char ** map; //use it to access the array 
-
-    public:
-        grid_world(const parameters &parametroi);
         
-        void create_map();
-        
-        void change_char(int x, int y, char c);
-        
-        void debug() const;
-        
-        ~grid_world();
-};
-
-class self_driving_car{
-    private:
-        // sensors sensores;
-        // navigation_system ploigisi;
-        string speed; 
-    public:
-        position thesi;
-        self_driving_car(parameters p);
-        void accelerate();
-        void decelerate();
-        void turn();
-};
-
-class navigation_system{
-    public:
-    private:
-};
-
-class sensors{
-    private:
-    public:
-};
-
 class object{
     protected:
         string id;
@@ -112,6 +71,60 @@ class object{
         char glyph;
         position thesi;
         virtual void update();
+};
+class grid_world{
+    private:
+        int height;
+        int width;
+        object *** map; //use it to access the array map[i][j] = object*
+
+    public:
+        grid_world(const parameters &parametroi);
+        
+        void create_map();
+        
+        void change_char(int x, int y, object * obj);
+        
+        void debug() const;
+        
+        ~grid_world();
+};
+
+
+
+class self_driving_car : public object {
+    private:
+        // sensors sensores; auto den exw idea pws tha to kanw implement
+        //navigation_system ploigisi;
+        string speed; 
+    public:
+        self_driving_car(parameters p);
+        void accelerate();
+        void decelerate();
+        void turn();
+};
+
+// class navigation_system{
+//     private:
+//         vector <position> gps_targets;
+
+//     public:
+//         void make_decision();
+    
+// };
+
+// class sensors{
+//     private:
+//         grid_world * plegma;
+//     public:
+// };
+
+
+
+
+class wall : public object {
+    public:
+        wall();
 };
 
 class moving_object:public object{ //TODO i need to think for the implementation of direction

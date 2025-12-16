@@ -1,27 +1,5 @@
 #include "../include/types.h"
 
-//self driving car 
-void self_driving_car::accelerate(){
-    if(speed == "STOPPED"){
-        speed = "HALF_SPEED";
-    }
-    else if(speed == "HALF_SPEED"){
-        speed = "FULL_SPEED";
-    }
-}
-
-void self_driving_car::decelerate(){
-    if(speed == "HALF_SPEED"){
-        speed = "STOPPED";
-    }
-    else if(speed == "FULL_SPEED"){
-        speed = "HALF_SPEED";
-    }
-}
-
-self_driving_car::self_driving_car(parameters p){
-    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
-}
 
 //parameters class functions intrepretatinos
 
@@ -107,7 +85,7 @@ int parameters::get_seed() const{
 int parameters::get_world_height() const{
     return world_height;
 }
-        
+
 int parameters::get_world_width() const{
     return world_width;
 }
@@ -140,7 +118,7 @@ int parameters::get_traffic_signs() const{
 //gia gird_world
 
 grid_world::~grid_world(){
-    for(int i = 0; i< height; i++){
+    for(int i = 0; i < height; i++){
         delete[] map[i];
     }
     delete[] map;
@@ -148,7 +126,7 @@ grid_world::~grid_world(){
 }
 
 grid_world::grid_world(const parameters &parametroi)
-    :height(parametroi.get_world_height()),width(parametroi.get_world_width())
+        :height(parametroi.get_world_height()),width(parametroi.get_world_width())
     {
         create_map();
     }
@@ -156,7 +134,7 @@ grid_world::grid_world(const parameters &parametroi)
 void grid_world::debug() const {
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            cout << map[i][j] << ' ';
+            cout << map[i][j]->glyph << ' ';
         }
         cout << endl;
     }
@@ -165,20 +143,20 @@ void grid_world::debug() const {
 void grid_world::create_map(){
     height++;
     width++;
-    map = new char*[height];
+    map = new object **[height];
     for(int i = 0; i < height; i ++){ //didnt use vector because size is static
-        map[i] = new char[width]();
+        map[i] = new object*[width]();
         for(int j = 0; j < width; j++){
-            map[i][j] = '.'; //arxikopoiei tis theseis me teleies
-            if(j == 0 || i ==0 || j == width - 1 || i == width -1){
-                map[i][j] = 'X';
+            map[i][j] = nullptr; //arxikopoiei tis theseis me teleies
+            if(j == 0 || i == 0 || j == width - 1 || i == width -1){
+                map[i][j] = new wall();
             }
         }
     }
 }
 
-void grid_world::change_char(int x,int y, char c){
-    map[x][y] = c;
+void grid_world::change_char(int x,int y, object * obj){
+    map[x][y] = obj;
 }
 
 
@@ -186,13 +164,13 @@ void grid_world::change_char(int x,int y, char c){
 
 //position
 position::position(const int &grammes,const int &stilles)
-: x(grammes),y(stilles)
+    : x(grammes),y(stilles)
 {
     
 }
 
 position::position()
-:x(0),y(0){}
+    :x(0),y(0){}
 
 int position::get_x() const{
     return x;
@@ -202,15 +180,15 @@ int position::get_y() const{
     return y;
 }
 
-void position::set_positions(int x1, int y1){
+void position::set_positions(const int x1,const int y1){
     x = x1;
     y = y1;
 }
 
-void position::set_y(int y1){
+void position::set_y(const int y1){
     y = y1;
 }
-void position::set_x(int x1){
+void position::set_x(const int x1){
     x = x1;
 }
 
@@ -243,7 +221,7 @@ void world::initialize_static_objects(parameters * params){
 
 
 world::world(parameters * params,grid_world * plegma)
-:finished(false),current_ticks(0),p(params),xartis(plegma)
+    :finished(false),current_ticks(0),p(params),xartis(plegma)
 {
     initialize_moving_objects(params);
     initialize_static_objects(params);
@@ -251,7 +229,7 @@ world::world(parameters * params,grid_world * plegma)
 
 void world::update(grid_world &plegma,self_driving_car &amaksi){
     current_ticks++;
-    plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),'@');
+    plegma.change_char(amaksi.thesi.get_x(),amaksi.thesi.get_y(),&amaksi);
     for(auto obj: moving_objects){ //to chat me voitithise me to na kanw loop through objects se ena vector
         // plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
         obj->move();
@@ -261,7 +239,7 @@ void world::update(grid_world &plegma,self_driving_car &amaksi){
         if(obj->glyph == 'R' || obj->glyph == 'Y' || obj->glyph == 'G'){
             obj->update();
         }
-        plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj->glyph);
+        plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj);
     }
 }
 
@@ -290,6 +268,35 @@ world::~world(){
 
 //for object
 void object::update(){
+}
+
+//for waaaalllllllllaaalallalalala
+wall::wall(){
+    glyph = 'X';
+}
+
+
+//self driving car 
+void self_driving_car::accelerate(){
+    if(speed == "STOPPED"){
+        speed = "HALF_SPEED";
+    }
+    else if(speed == "HALF_SPEED"){
+        speed = "FULL_SPEED";
+    }
+}
+
+void self_driving_car::decelerate(){
+    if(speed == "HALF_SPEED"){
+        speed = "STOPPED";
+    }
+    else if(speed == "FULL_SPEED"){
+        speed = "HALF_SPEED";
+    }
+}
+
+self_driving_car::self_driving_car(parameters p){
+    thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
 }
 
 //for moving_object
@@ -355,8 +362,8 @@ int traffic_sign::traffic_signs_count = 1;
 int car::car_count = 1;
 
 
-car::car(const parameters &p , grid_world *xartis)
-    :moving_object(xartis)
+car::car(const parameters &p , grid_world * xartis)
+        :moving_object(xartis)
     {
         id = "car"+ to_string(car_count++);
         glyph = 'C';
@@ -365,12 +372,12 @@ car::car(const parameters &p , grid_world *xartis)
 
 void car::move(){
     if(thesi.get_x() - 2 > 0 ){
-        plegma->change_char(thesi.get_x(),thesi.get_y(),'.'); // kane to current teleia
+        plegma->change_char(thesi.get_x(),thesi.get_y(),nullptr); // kane to current teleia
         
         thesi.set_x(thesi.get_x() - 2);
 
         //kane to apo panw teleia
-        plegma->change_char(thesi.get_x(),thesi.get_y(),'C');
+        plegma->change_char(thesi.get_x(),thesi.get_y(),this);
     }
     else{
         //TODO simainei oti einai sto edge ara prepei na allaksei direction
@@ -390,12 +397,12 @@ bike::bike(const parameters &p,grid_world* grid)
 
 void bike::move(){
     if(thesi.get_x() - 1 != 0){
-        plegma->change_char(thesi.get_x(),thesi.get_y(),'.'); // kane to current teleia
+        plegma->change_char(thesi.get_x(),thesi.get_y(),nullptr); // kane to current teleia
         
         thesi.set_x(thesi.get_x() - 1);
 
         //kane to apo panw teleia
-        plegma->change_char(thesi.get_x(),thesi.get_y(),'B');
+        plegma->change_char(thesi.get_x(),thesi.get_y(),this);
     }
     else{
 
