@@ -310,6 +310,9 @@ self_driving_car::self_driving_car(parameters p){
 }
 
 //for sensors 
+sensors sensors::extract_info(){
+
+}
 
 
 lidar_sensor::lidar_sensor(object *** xartis , position * posi , string tax , string conf){
@@ -323,7 +326,7 @@ sensors lidar_sensor::extract_info(){
     char c;
     for(int i = thesi_amaksiou->get_x() - 4; i < thesi_amaksiou->get_x() + 4; i++){
         for(int j = thesi_amaksiou->get_y() - 4; j < thesi_amaksiou->get_y() + 4; j++){
-            if (i >= 0 && i < 40 && j >= 0 && j < 40 && map[i][j] && map[i][j]->glyph != 'X') {
+            if (i >= 0 && i < 40 && j >= 0 && j < 40 && map[i][j] && map[i][j]->glyph != 'X') { //gia na min faw segfault gia na min kanw access nullptr kai min kanw access edge X :p
                 if(map[i][j] && map[i][j]->glyph != 'X'){
                     c = map[i][j]->glyph;
                     if(c == 'C' || c == 'B'){

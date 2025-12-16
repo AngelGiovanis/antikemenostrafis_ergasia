@@ -73,40 +73,6 @@ class object{
         virtual void update();
 };
 
-class grid_world{
-    private:
-        int height;
-        int width;
-        object *** map; //use it to access the array map[i][j] = object*
-
-    public:
-        grid_world(const parameters &parametroi);
-        
-        void create_map();
-        
-        void change_char(int x, int y, object * obj);
-        
-        void debug() const;
-
-        object *** return_map_pointer();
-        
-        ~grid_world();
-};
-
-
-
-class self_driving_car : public object {
-    private:
-        sensors sensores; //auto den exw idea pws tha to kanw implement
-        navigation_system ploigisi;
-        string speed; 
-    public:
-        self_driving_car(parameters p);
-        void accelerate();
-        void decelerate();
-        void turn();
-};
-
 class navigation_system{
     private:
         vector <position> gps_targets;
@@ -143,11 +109,8 @@ class sensors{
 
 class lidar_sensor : public sensors{
     private:
-        //i neeed a vector of positions and a vector of characters 
         vector<position*> positions;
         vector<char> objects;
-        int height;
-        int width;
     public:
         lidar_sensor(object *** map,position * pos,string tax,string conf);
         sensors extract_info();
@@ -157,6 +120,7 @@ class radar_sensor : public sensors{
     private:
 
     public:
+
 };
 
 class camera_sensor : public sensors{
@@ -164,6 +128,42 @@ class camera_sensor : public sensors{
 
     public:
 };
+
+
+class grid_world{
+    private:
+        int height;
+        int width;
+        object *** map; //use it to access the array map[i][j] = object*
+
+    public:
+        grid_world(const parameters &parametroi);
+        
+        void create_map();
+        
+        void change_char(int x, int y, object * obj);
+        
+        void debug() const;
+
+        object *** return_map_pointer();
+        
+        ~grid_world();
+};
+
+
+
+class self_driving_car : public object {
+    private:
+        // sensors sensores; //auto den exw idea pws tha to kanw implement
+        // navigation_system ploigisi;
+        string speed; 
+    public:
+        self_driving_car(parameters p);
+        void accelerate();
+        void decelerate();
+        void turn();
+};
+
 
 class wall : public object {
     public:
