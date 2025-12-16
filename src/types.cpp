@@ -134,7 +134,12 @@ grid_world::grid_world(const parameters &parametroi)
 void grid_world::debug() const {
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            cout << map[i][j]->glyph << ' ';
+            if(map[i][j]){
+                cout << map[i][j]->glyph << ' ';
+            }
+            else{
+                cout<<'.'<<' ';
+            }
         }
         cout << endl;
     }
@@ -157,6 +162,10 @@ void grid_world::create_map(){
 
 void grid_world::change_char(int x,int y, object * obj){
     map[x][y] = obj;
+}
+
+object *** grid_world::return_map_pointer(){
+    return map;
 }
 
 
@@ -297,6 +306,37 @@ void self_driving_car::decelerate(){
 
 self_driving_car::self_driving_car(parameters p){
     thesi.set_positions(rand() % p.get_world_height(),rand() % p.get_world_width());
+    glyph = '@';
+}
+
+//for sensors 
+
+
+lidar_sensor::lidar_sensor(object *** xartis , position * posi , string tax , string conf){
+    map = xartis;
+    thesi_amaksiou = posi;
+    speed = tax;
+    confidence = conf;
+}
+
+sensors lidar_sensor::extract_info(){
+    char c;
+    for(int i = thesi_amaksiou->get_x() - 4; i < thesi_amaksiou->get_x() + 4; i++){
+        for(int j = thesi_amaksiou->get_y() - 4; j < thesi_amaksiou->get_y() + 4; j++){
+            if (i >= 0 && i < 40 && j >= 0 && j < 40 && map[i][j] && map[i][j]->glyph != 'X') {
+                if(map[i][j] && map[i][j]->glyph != 'X'){
+                    c = map[i][j]->glyph;
+                    if(c == 'C' || c == 'B'){
+                        objects.push_back('M');
+                    }
+                    else{
+                        objects.push_back('S');
+                    }
+                    positions.push_back(&map[i][j]->thesi);
+                }
+            }
+        }
+    }
 }
 
 //for moving_object

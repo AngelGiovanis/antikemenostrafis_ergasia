@@ -72,6 +72,7 @@ class object{
         position thesi;
         virtual void update();
 };
+
 class grid_world{
     private:
         int height;
@@ -86,6 +87,8 @@ class grid_world{
         void change_char(int x, int y, object * obj);
         
         void debug() const;
+
+        object *** return_map_pointer();
         
         ~grid_world();
 };
@@ -94,8 +97,8 @@ class grid_world{
 
 class self_driving_car : public object {
     private:
-        // sensors sensores; auto den exw idea pws tha to kanw implement
-        //navigation_system ploigisi;
+        sensors sensores; //auto den exw idea pws tha to kanw implement
+        navigation_system ploigisi;
         string speed; 
     public:
         self_driving_car(parameters p);
@@ -104,23 +107,63 @@ class self_driving_car : public object {
         void turn();
 };
 
-// class navigation_system{
-//     private:
-//         vector <position> gps_targets;
+class navigation_system{
+    private:
+        vector <position> gps_targets;
 
-//     public:
-//         void make_decision();
+    public:
+        void make_decision();
     
-// };
-
-// class sensors{
-//     private:
-//         grid_world * plegma;
-//     public:
-// };
+};
 
 
+//TODO SENSORES 
+/*•2.2.1 Αισθητήρας Lidar (Lidar Sensor) Εμβέλεια: 9 κελιά
+• Οπτικό πεδίο: Ένα τετράγωνο 81 κελιών, με κεντρικό κελί στο όχημα (δηλαδή
+όραση «360 μοιρών» 9x9 κελιών)
+• Ανιχνεύει: Όλα τα αντικείμενα (στατικά και κινούμενα), όχι όμως χρώμα φαναριών ή κείμενο πινακίδας
+• Επιστρέφει: Απόσταση, κατηγορία αντικειμένου, βεβαιότητα
+• Ακρίβεια: Εξαιρετική για απόσταση, μέτρια για κατηγοριοποίηση
+2.2.2 Αισθητήρας ραντάρ (Radar Sensor)
+• Εμβέλεια: 12 κελιά
+• Οπτικό πεδίο: 12 κελιά ευθεία μπροστά
+• Ανιχνεύει: Μόνο κινούμενα αντικείμενα
+• Επιστρέφει: Απόσταση, ταχύτητα, κατεύθυνση κίνησης, βεβαιότητα
+• Ακρίβεια: Υψηλή για απόσταση και για κατηγοριοποίηση*/
 
+class sensors{
+    protected:
+        object *** map;
+        position * thesi_amaksiou;
+        string speed;
+        string confidence; //maybe??
+    public:
+        virtual sensors extract_info();
+};
+
+class lidar_sensor : public sensors{
+    private:
+        //i neeed a vector of positions and a vector of characters 
+        vector<position*> positions;
+        vector<char> objects;
+        int height;
+        int width;
+    public:
+        lidar_sensor(object *** map,position * pos,string tax,string conf);
+        sensors extract_info();
+};
+
+class radar_sensor : public sensors{
+    private:
+
+    public:
+};
+
+class camera_sensor : public sensors{
+    private:
+
+    public:
+};
 
 class wall : public object {
     public:
