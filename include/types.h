@@ -107,8 +107,7 @@ class sensors{
         object *** map;
         position * thesi_amaksiou;
         direction * dir;
-        string speed;
-        string confidence; //maybe??
+        int speed;
     public:
         virtual void extract_info();
         
@@ -120,7 +119,7 @@ class lidar_sensor : public sensors{
         vector<char> objects;
         vector<float> accuracy;
     public:
-        lidar_sensor(object *** map,position * pos,string tax,string conf);
+        lidar_sensor(object *** xartis,position * posi,int tax,direction * dire);
         void extract_info();
 };
 
@@ -131,7 +130,7 @@ class radar_sensor : public sensors{
         vector<direction> directions;
         vector<int> accuracy;
     public:
-        radar_sensor(object *** map,position * pos,string tax,string conf);
+        radar_sensor(object *** map,position * pos,int tax,direction * dire);
         void extract_info();
         void debug_radar() const;
 
@@ -172,15 +171,19 @@ class grid_world{
 
 class self_driving_car : public object {
     private:
-        lidar_sensor lidar;
-        radar_sensor radar;
+        lidar_sensor * lidar;
+        radar_sensor * radar;
         // camera_sensor camera;        // navigation_system ploigisi;
-        string speed; 
+        string speed;
+        direction dir;
     public:
-        self_driving_car(parameters p);
+        self_driving_car(parameters p,grid_world * plegma);
         void accelerate();
         void decelerate();
         void turn();
+        void debug_radar();
+        void extract_from_sensors();
+        ~self_driving_car(); //i allocated memory for the lidar and radar and cmaera sensor l,ao
 };
 
 

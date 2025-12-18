@@ -256,6 +256,9 @@ void world::update(grid_world &plegma,self_driving_car &amaksi){
         }
         plegma.change_char(obj->thesi.get_x(), obj->thesi.get_y(), obj);
     }
+
+    amaksi.extract_from_sensors();
+
 }
 
 int world::get_ticks(){
@@ -310,21 +313,40 @@ void self_driving_car::decelerate(){
     }
 }
 
-self_driving_car::self_driving_car(parameters p):lidar_sensor(),radar_sensor()/*constructors for sensors */{
+void self_driving_car::debug_radar(){
+    radar->debug_radar();
+}
+
+self_driving_car::self_driving_car(parameters p,grid_world * plegma){
     thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
     glyph = '@';
+    dir = {1,0};
+    lidar = new lidar_sensor(plegma->return_map_pointer(),&thesi,0,&dir);
+    radar = new radar_sensor(plegma->return_map_pointer(),&thesi,0,&dir);
+
 }
+
+void self_driving_car::extract_from_sensors(){
+    radar->extract_info();
+}
+
+
+self_driving_car::~self_driving_car(){
+    //destructor free the memory for lidar and radar
+}
+
+
 
 //for sensors 
 void sensors::extract_info(){
 }
 
 
-lidar_sensor::lidar_sensor(object *** xartis , position * posi , string tax , string conf){
+lidar_sensor::lidar_sensor(object *** xartis , position * posi , int tax,direction * dire){
     map = xartis;
     thesi_amaksiou = posi;
     speed = tax;
-    confidence = conf;
+    dir = dire;
 }
 
 void lidar_sensor::extract_info(){
@@ -353,11 +375,11 @@ void lidar_sensor::extract_info(){
 
 //radar sensor love 
 
-radar_sensor::radar_sensor(object *** xartis , position * posi , string tax , string conf){
+radar_sensor::radar_sensor(object *** xartis , position * posi , int tax,direction * dire ){
     map = xartis;
     thesi_amaksiou = posi;
     speed = tax;
-    confidence = conf;
+    dir = dire;
 } //TODO tha to allaksw kai tha valw ton idio constructor giati kanei tin idia douleia 
 
 void radar_sensor::extract_info(){
@@ -376,17 +398,26 @@ void radar_sensor::extract_info(){
     // }
 
     //auto thelei kai test gia segfault
+
+    positions.clear();
+    object_speed.clear();    
+    directions.clear();      
+    accuracy.clear();
+
     int start_x = thesi_amaksiou->get_x() + dir->dx;
     int start_y = thesi_amaksiou->get_y() + dir->dy;
     int manhatan_distance = 0;
+    
     for(int i = 0; i < 12; i++){
         int nx = start_x + i * dir->dx;
         int ny = start_y + i * dir-> dy;
 
         if(nx < 1|| ny < 1 || nx > 40 || ny > 40 || !(map[nx][ny])){ //no segfault , no checking empty and non moving objects 
+            cout<<"den trexei logo oriwn"<<endl;
             break;
         }
         if(map[nx][ny]->glyph != 'C' && map[nx][ny]->glyph != 'B'){
+            cout<<"den trexei logo elegxo glyphs"<<endl;
             continue;
         }
         pointer = static_cast<moving_object*>(map[nx][ny]);
@@ -404,16 +435,20 @@ void radar_sensor::extract_info(){
 }
 
 void radar_sensor::debug_radar() const {
-        cout << "\nRADAR DETECTIONS:" << endl;
-        for (size_t i = 0; i < positions.size(); i++) {
-            cout << "Distance: " << positions[i]
-                 << " | Speed: " << object_speed[i]
-                 << " | Direction: (" << directions[i].dx << "," << directions[i].dy << ")"
-                 << " | Accuracy: " << accuracy[i] << endl;
-        }
-        cout << "============================" << endl;
+    cout << "=== RADAR DEBUG ===" << endl;
+    if (positions.empty()) {
+        cout << "No objects detected." << endl;
+        return;
     }
 
+    for (size_t i = 0; i < positions.size(); ++i) {
+        cout << "Object at distance: " << positions[i] 
+             << ", speed: " << object_speed[i] 
+             << ", direction: (" << directions[i].dx << "," << directions[i].dy << ")"
+             << ", accuracy: " << accuracy[i] << endl;
+    }
+    cout << "==================" << endl;
+}
 
 //for moving_object
 moving_object::moving_object(grid_world * grid):dir{1,0}{
