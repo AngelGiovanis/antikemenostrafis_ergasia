@@ -407,19 +407,19 @@ void radar_sensor::extract_info(){
     int start_x = thesi_amaksiou->get_x() + dir->dx;
     int start_y = thesi_amaksiou->get_y() + dir->dy;
     int manhatan_distance = 0;
-    
+
     for(int i = 0; i < 12; i++){
         int nx = start_x + i * dir->dx;
         int ny = start_y + i * dir-> dy;
 
-        if(nx < 1|| ny < 1 || nx > 40 || ny > 40 || !(map[nx][ny])){ //no segfault , no checking empty and non moving objects 
+        if(nx < 1|| ny < 1 || nx > 40 || ny > 40 ){ //no segfault , no checking empty and non moving objects 
             cout<<"den trexei logo oriwn"<<endl;
             break;
         }
-        if(map[nx][ny]->glyph != 'C' && map[nx][ny]->glyph != 'B'){
-            cout<<"den trexei logo elegxo glyphs"<<endl;
+        if(!(map[nx][ny]) || (map[nx][ny]->glyph != 'C' && map[nx][ny]->glyph != 'B')){
             continue;
         }
+
         pointer = static_cast<moving_object*>(map[nx][ny]);
         manhatan_distance = (nx-thesi_amaksiou->get_x())+(ny-thesi_amaksiou->get_y());
         positions.push_back(manhatan_distance);
