@@ -106,38 +106,39 @@ class sensors{
     protected:
         object *** map;
         position * thesi_amaksiou;
+        direction * dir;
         string speed;
         string confidence; //maybe??
     public:
-        virtual sensors extract_info();
+        virtual void extract_info();
+        
 };
 
 class lidar_sensor : public sensors{
     private:
         vector<int> positions;
         vector<char> objects;
-        vector<int> accuracy;
+        vector<float> accuracy;
     public:
         lidar_sensor(object *** map,position * pos,string tax,string conf);
-        sensors extract_info();
+        void extract_info();
 };
 
 class radar_sensor : public sensors{
     private:
         vector<int> positions;
-        vector<char> objects;
         vector<string> object_speed;
-        //TODO KATEFTHINSI 
+        vector<direction> directions;
         vector<int> accuracy;
     public:
         radar_sensor(object *** map,position * pos,string tax,string conf);
-        sensors extract_info();
+        void extract_info();
+        void debug_radar() const;
 
 };
 
 class camera_sensor : public sensors{
     private:
-
     public:
 };
 
@@ -171,8 +172,9 @@ class grid_world{
 
 class self_driving_car : public object {
     private:
-        // sensors sensores; //auto den exw idea pws tha to kanw implement
-        // navigation_system ploigisi;
+        lidar_sensor lidar;
+        radar_sensor radar;
+        // camera_sensor camera;        // navigation_system ploigisi;
         string speed; 
     public:
         self_driving_car(parameters p);
@@ -187,7 +189,7 @@ class wall : public object {
         wall();
 };
 
-class moving_object:public object{ //TODO i need to think for the implementation of direction
+class moving_object:public object{ 
     protected:
         grid_world *plegma;
         string speed;
@@ -196,6 +198,7 @@ class moving_object:public object{ //TODO i need to think for the implementation
         virtual void move();
         moving_object(grid_world* grid);
         string get_speed();
+        direction get_dir();
 };
 
 class car: public moving_object{

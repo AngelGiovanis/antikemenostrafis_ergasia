@@ -310,13 +310,13 @@ void self_driving_car::decelerate(){
     }
 }
 
-self_driving_car::self_driving_car(parameters p){
+self_driving_car::self_driving_car(parameters p):lidar_sensor(),radar_sensor()/*constructors for sensors */{
     thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
     glyph = '@';
 }
 
 //for sensors 
-sensors sensors::extract_info(){
+void sensors::extract_info(){
 }
 
 
@@ -327,8 +327,9 @@ lidar_sensor::lidar_sensor(object *** xartis , position * posi , string tax , st
     confidence = conf;
 }
 
-sensors lidar_sensor::extract_info(){
+void lidar_sensor::extract_info(){
     char c;
+    int manhatan_distance = 0;
     for(int i = thesi_amaksiou->get_x() - 4; i < thesi_amaksiou->get_x() + 4; i++){
         for(int j = thesi_amaksiou->get_y() - 4; j < thesi_amaksiou->get_y() + 4; j++){
             if (i >= 0 && i < 40 && j >= 0 && j < 40 && map[i][j] && map[i][j]->glyph != 'X') { //gia na min faw segfault gia na min kanw access nullptr kai min kanw access edge X :p
@@ -340,8 +341,10 @@ sensors lidar_sensor::extract_info(){
                     else{
                         objects.push_back('S');
                     }
-                    positions.push_back((i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y())); //manhattan distance 
-                    //TODO na kanw implement to accuracy
+                    manhatan_distance = (i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y());
+                    positions.push_back(manhatan_distance); //manhattan distance 
+
+                    accuracy.push_back(0.99 * (manhatan_distance/40.0) - 0.05); //pame ligo
                 }
             }
         }
@@ -357,21 +360,60 @@ radar_sensor::radar_sensor(object *** xartis , position * posi , string tax , st
     confidence = conf;
 } //TODO tha to allaksw kai tha valw ton idio constructor giati kanei tin idia douleia 
 
-sensors radar_sensor::extract_info(){
+void radar_sensor::extract_info(){
     moving_object* pointer;
-    int i = thesi_amaksiou->get_x();
-    for(int j = thesi_amaksiou->get_y() + 1; i < thesi_amaksiou->get_x() + 4; i++){
-        if (i >= 0 && i < 40 && j >= 0 && j < 40 && map[i][j] && map[i][j]->glyph != 'X') { //gia na min faw segfault gia na min kanw access nullptr kai min kanw access edge X :p
-            if(map[i][j] && map[i][j]->glyph != 'X' && (map[i][j]->glyph == 'B' || map[i][j]->glyph == 'C')){
-                positions.push_back((i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y())); //manhattan distance 
-                pointer = static_cast<moving_object*>(map[i][j]);
-                object_speed.push_back(pointer->get_speed());
-                //TODO katefthinsi
-                //TODO vevaiotita
-            }
+    // int i = thesi_amaksiou->get_x();
+    // for(int j = thesi_amaksiou->get_y() + 1; i < thesi_amaksiou->get_x() + 4; i++){
+    //     if (i >= 0 && i < 40 && j >= 0 && j < 40 && map[i][j] && map[i][j]->glyph != 'X') { //gia na min faw segfault gia na min kanw access nullptr kai min kanw access edge X :p
+    //         if(map[i][j] && map[i][j]->glyph != 'X' && (map[i][j]->glyph == 'B' || map[i][j]->glyph == 'C')){
+    //             positions.push_back((i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y())); //manhattan distance 
+    //             pointer = static_cast<moving_object*>(map[i][j]);
+    //             object_speed.push_back(pointer->get_speed());
+    //             //TODO katefthinsi
+    //             //TODO vevaiotita
+    //         }
+    //     }
+    // }
+
+    //auto thelei kai test gia segfault
+    int start_x = thesi_amaksiou->get_x() + dir->dx;
+    int start_y = thesi_amaksiou->get_y() + dir->dy;
+    int manhatan_distance = 0;
+    for(int i = 0; i < 12; i++){
+        int nx = start_x + i * dir->dx;
+        int ny = start_y + i * dir-> dy;
+
+        if(nx < 1|| ny < 1 || nx > 40 || ny > 40 || !(map[nx][ny])){ //no segfault , no checking empty and non moving objects 
+            break;
         }
+        if(map[nx][ny]->glyph != 'C' && map[nx][ny]->glyph != 'B'){
+            continue;
+        }
+        pointer = static_cast<moving_object*>(map[nx][ny]);
+        manhatan_distance = (nx-thesi_amaksiou->get_x())+(ny-thesi_amaksiou->get_y());
+        positions.push_back(manhatan_distance);
+
+        object_speed.push_back(pointer->get_speed());
+
+        directions.push_back(pointer->get_dir());
+        //TODO accuracy
+
+
     }
+
 }
+
+void radar_sensor::debug_radar() const {
+        cout << "\nRADAR DETECTIONS:" << endl;
+        for (size_t i = 0; i < positions.size(); i++) {
+            cout << "Distance: " << positions[i]
+                 << " | Speed: " << object_speed[i]
+                 << " | Direction: (" << directions[i].dx << "," << directions[i].dy << ")"
+                 << " | Accuracy: " << accuracy[i] << endl;
+        }
+        cout << "============================" << endl;
+    }
+
 
 //for moving_object
 moving_object::moving_object(grid_world * grid):dir{1,0}{
@@ -384,6 +426,10 @@ void moving_object::move(){
 
 string moving_object::get_speed(){
     return speed;
+}
+
+direction moving_object::get_dir(){
+    return dir;
 }
 
 
