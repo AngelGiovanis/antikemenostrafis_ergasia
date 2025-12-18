@@ -503,7 +503,7 @@ void bike::move(){
         dir = { -dir.dy, dir.dx };  // rotate other way
     int nx = thesi.get_x() + dir.dx;
     int ny = thesi.get_y() + dir.dy;
-    if (nx <= 0 || ny <= 0 || nx >= plegma->get_x()/*world width*/ || ny >= plegma->get_y()/*world height*/){
+    if (nx < 1 || ny < 1 || nx >= plegma->get_x() -1 /*world width*/ || ny >= plegma->get_y() - 1 /*world height*/){
         return;
     } 
     plegma->change_char(thesi.get_x(),thesi.get_y(),nullptr); // kane to current teleia
