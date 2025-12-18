@@ -168,7 +168,13 @@ object *** grid_world::return_map_pointer(){
     return map;
 }
 
-
+int grid_world::get_x(){
+    return width;
+}
+        
+int grid_world::get_y(){
+    return height;
+}
 
 
 //position
@@ -368,9 +374,9 @@ sensors radar_sensor::extract_info(){
 }
 
 //for moving_object
-moving_object::moving_object(grid_world * grid){
+moving_object::moving_object(grid_world * grid):dir{1,0}{
     plegma = grid;
-    current_ticks = 0;
+
 }
 
 void moving_object::move(){
@@ -444,18 +450,25 @@ car::car(const parameters &p , grid_world * xartis)
         thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
     }
 
-void car::move(){
-    if(thesi.get_x() - 2 > 0 ){
-        plegma->change_char(thesi.get_x(),thesi.get_y(),nullptr); // kane to current teleia
-        
-        thesi.set_x(thesi.get_x() - 2);
+void car::move(){ //AAAAAAA
 
-        //kane to apo panw teleia
-        plegma->change_char(thesi.get_x(),thesi.get_y(),this);
-    }
-    else{
-        //TODO simainei oti einai sto edge ara prepei na allaksei direction
-    }
+    if (rand() % 2)
+        dir = { dir.dy, -dir.dx };   // rotate 90°
+    else
+        dir = { -dir.dy, dir.dx };  // rotate other way
+    
+    int nx = thesi.get_x() + 2 * dir.dx;
+    int ny = thesi.get_y() + 2 * dir.dy;
+    if (nx < 1 || ny < 1 || nx >= plegma->get_x() -1 /*world width*/ || ny >= plegma->get_y() -1/*world height*/){
+        return;
+    } 
+    plegma->change_char(thesi.get_x(),thesi.get_y(),nullptr); // kane to current teleia
+           
+    thesi.set_x(nx);
+    thesi.set_y(ny); //2 * epeidi kinountai me tin diplasia taxitita 
+    
+    //kane to apo panw teleia
+    plegma->change_char(thesi.get_x(),thesi.get_y(),this);
 }
 
 
@@ -471,16 +484,34 @@ bike::bike(const parameters &p,grid_world* grid)
         }
 
 void bike::move(){
-    if(thesi.get_x() - 1 != 0){
-        plegma->change_char(thesi.get_x(),thesi.get_y(),nullptr); // kane to current teleia
+    // if(thesi.get_x() - 1 != 0){
+    //     plegma->change_char(thesi.get_x(),thesi.get_y(),nullptr); // kane to current teleia
         
-        thesi.set_x(thesi.get_x() - 1);
+    //     thesi.set_x(thesi.get_x() + dir.dx);
+    //     thesi.set_y(thesi.get_y() + dir.dy);
 
-        //kane to apo panw teleia
-        plegma->change_char(thesi.get_x(),thesi.get_y(),this);
-    }
-    else{
 
-    }
+    //     //kane to apo panw teleia
+    //     plegma->change_char(thesi.get_x(),thesi.get_y(),this);
+    // }
+    // else{
+
+    // }
+    if (rand() % 2)
+        dir = { dir.dy, -dir.dx };  
+    else
+        dir = { -dir.dy, dir.dx };  // rotate other way
+    int nx = thesi.get_x() + dir.dx;
+    int ny = thesi.get_y() + dir.dy;
+    if (nx <= 0 || ny <= 0 || nx >= plegma->get_x()/*world width*/ || ny >= plegma->get_y()/*world height*/){
+        return;
+    } 
+    plegma->change_char(thesi.get_x(),thesi.get_y(),nullptr); // kane to current teleia
+           
+    thesi.set_x(nx);
+    thesi.set_y(ny); //2 * epeidi kinountai me tin diplasia taxitita 
+    
+    //kane to apo panw teleia
+    plegma->change_char(thesi.get_x(),thesi.get_y(),this);
 }
 

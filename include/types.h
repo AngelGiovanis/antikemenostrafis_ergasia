@@ -23,6 +23,11 @@ class position{
         void set_x(const int x1);
 };
 
+struct direction {
+    int dx;
+    int dy;
+};
+
 class parameters{
     private:
         int seed;
@@ -112,7 +117,6 @@ class lidar_sensor : public sensors{
         vector<int> positions;
         vector<char> objects;
         vector<int> accuracy;
-
     public:
         lidar_sensor(object *** map,position * pos,string tax,string conf);
         sensors extract_info();
@@ -154,8 +158,13 @@ class grid_world{
         void debug() const;
 
         object *** return_map_pointer();
+
+        int get_x();
+        
+        int get_y();
         
         ~grid_world();
+
 };
 
 
@@ -181,8 +190,8 @@ class wall : public object {
 class moving_object:public object{ //TODO i need to think for the implementation of direction
     protected:
         grid_world *plegma;
-        int current_ticks;
         string speed;
+        direction dir;
     public:
         virtual void move();
         moving_object(grid_world* grid);

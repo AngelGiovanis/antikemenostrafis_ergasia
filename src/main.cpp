@@ -41,7 +41,5 @@ int main(int argc, char ** argv ){
     }
 
     cout<<p.get_ticks()<<endl;
-    //?while loop pou tha elegxei an current_ticks<max_ticks kai not_finished variable pou koitaei an self_driving_car exei kanei tin diadromi toy
-
     return 0;
 }
