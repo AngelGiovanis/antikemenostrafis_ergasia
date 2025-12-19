@@ -132,13 +132,14 @@ class radar_sensor : public sensors{
     public:
         radar_sensor(object *** map,position * pos,int tax,direction * dire);
         void extract_info();
-        void debug_radar() const;
 
 };
 
 class camera_sensor : public sensors{
     private:
+        vector<object*> positions;
     public:
+        void extract_info();
 };
 
 

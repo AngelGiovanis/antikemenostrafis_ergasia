@@ -38,7 +38,7 @@ int main(int argc, char ** argv ){
 
         kosmos.update(plegma,amaksi); //kanei update sto grid tin current thesi twn pragmatwn 
         
-        // cout<<kosmos.get_ticks()<<endl; //printarei current tick 
+
         
         plegma.debug(); //printarei kosmo 
         std::this_thread::sleep_for(std::chrono::milliseconds(1500)); //to check the implementation

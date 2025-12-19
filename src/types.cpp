@@ -313,10 +313,6 @@ void self_driving_car::decelerate(){
     }
 }
 
-void self_driving_car::debug_radar(){
-    radar->debug_radar();
-}
-
 self_driving_car::self_driving_car(parameters p,grid_world * plegma){
     thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
     glyph = '@';
@@ -328,6 +324,7 @@ self_driving_car::self_driving_car(parameters p,grid_world * plegma){
 
 void self_driving_car::extract_from_sensors(){
     radar->extract_info();
+    lidar->extract_info();
 }
 
 
@@ -350,6 +347,11 @@ lidar_sensor::lidar_sensor(object *** xartis , position * posi , int tax,directi
 }
 
 void lidar_sensor::extract_info(){
+
+    positions.clear();
+    objects.clear();
+    accuracy.clear();
+
     char c;
     int manhatan_distance = 0;
     for(int i = thesi_amaksiou->get_x() - 4; i < thesi_amaksiou->get_x() + 4; i++){
@@ -371,6 +373,23 @@ void lidar_sensor::extract_info(){
             }
         }
     }
+    cout << "=== LIDAR DEBUG ===" << endl;
+
+    if (positions.empty()) {
+        cout << "Lidar sees nothing. Either the world is empty or you broke it." << endl;
+        return;
+    }
+
+    for (size_t i = 0; i < positions.size(); i++) {
+        cout << "Object " << i
+             << " | distance: " << positions[i]
+             << " | category: " << objects[i]
+             << " | accuracy: " << accuracy[i]
+             << endl;
+    }
+
+    cout << "===================" << endl;
+    
 }
 
 //radar sensor love 
@@ -413,7 +432,6 @@ void radar_sensor::extract_info(){
         int ny = start_y + i * dir-> dy;
 
         if(nx < 1|| ny < 1 || nx > 40 || ny > 40 ){ //no segfault , no checking empty and non moving objects 
-            cout<<"den trexei logo oriwn"<<endl;
             break;
         }
         if(!(map[nx][ny]) || (map[nx][ny]->glyph != 'C' && map[nx][ny]->glyph != 'B')){
@@ -432,23 +450,32 @@ void radar_sensor::extract_info(){
 
     }
 
-}
+    cout << "=== CAMERA DEBUG ===" << endl;
 
-void radar_sensor::debug_radar() const {
-    cout << "=== RADAR DEBUG ===" << endl;
     if (positions.empty()) {
-        cout << "No objects detected." << endl;
+        cout << "Camera sees absolutely nothing. Congrats, it's blind." << endl;
         return;
     }
 
-    for (size_t i = 0; i < positions.size(); ++i) {
-        cout << "Object at distance: " << positions[i] 
-             << ", speed: " << object_speed[i] 
-             << ", direction: (" << directions[i].dx << "," << directions[i].dy << ")"
-             << ", accuracy: " << accuracy[i] << endl;
+    for (size_t i = 0; i < positions.size(); i++) {
+        cout << "Object " << i
+             << " | distance: " << positions[i]
+            << " | speed: " << object_speed[i]
+             << endl;
     }
-    cout << "==================" << endl;
+
+    cout << "====================" << endl;
+
 }
+
+//camera sensor 
+
+void camera_sensor::extract_info(){
+    moving_object* pointer;
+    
+}
+
+
 
 //for moving_object
 moving_object::moving_object(grid_world * grid):dir{1,0}{
