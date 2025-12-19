@@ -146,8 +146,6 @@ void grid_world::debug() const {
 }
 
 void grid_world::create_map(){
-    height++;
-    width++;
     map = new object **[height];
     for(int i = 0; i < height; i ++){ //didnt use vector because size is static
         map[i] = new object*[width]();
@@ -296,35 +294,32 @@ wall::wall(){
 
 //self driving car 
 void self_driving_car::accelerate(){
-    if(speed == "STOPPED"){
-        speed = "HALF_SPEED";
-    }
-    else if(speed == "HALF_SPEED"){
-        speed = "FULL_SPEED";
+    if(speed != 2){
+        speed++;
     }
 }
 
 void self_driving_car::decelerate(){
-    if(speed == "HALF_SPEED"){
-        speed = "STOPPED";
-    }
-    else if(speed == "FULL_SPEED"){
-        speed = "HALF_SPEED";
+    if(speed != 0){
+        speed--;
     }
 }
 
 self_driving_car::self_driving_car(parameters p,grid_world * plegma){
     thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
     glyph = '@';
-    dir = {1,0};
+    dir = {0,1};
     lidar = new lidar_sensor(plegma->return_map_pointer(),&thesi,0,&dir);
     radar = new radar_sensor(plegma->return_map_pointer(),&thesi,0,&dir);
-
+    camera = new camera_sensor(plegma->return_map_pointer(),&thesi,0,&dir);
 }
 
 void self_driving_car::extract_from_sensors(){
     radar->extract_info();
     lidar->extract_info();
+    camera->extract_info();
+
+    //these make my code go boom boom sergfault 
 }
 
 
@@ -356,40 +351,22 @@ void lidar_sensor::extract_info(){
     int manhatan_distance = 0;
     for(int i = thesi_amaksiou->get_x() - 4; i < thesi_amaksiou->get_x() + 4; i++){
         for(int j = thesi_amaksiou->get_y() - 4; j < thesi_amaksiou->get_y() + 4; j++){
-            if (i >= 0 && i < 40 && j >= 0 && j < 40 && map[i][j] && map[i][j]->glyph != 'X') { //gia na min faw segfault gia na min kanw access nullptr kai min kanw access edge X :p
-                if(map[i][j] && map[i][j]->glyph != 'X'){
-                    c = map[i][j]->glyph;
-                    if(c == 'C' || c == 'B'){
-                        objects.push_back('M');
-                    }
-                    else{
-                        objects.push_back('S');
-                    }
-                    manhatan_distance = (i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y());
-                    positions.push_back(manhatan_distance); //manhattan distance 
-
-                    accuracy.push_back(0.99 * (manhatan_distance/40.0) - 0.05); //pame ligo
-                }
+            if (i < 1 || i > 40 || j < 1 || j > 40) break;  //gia na min faw segfault gia na min kanw access nullptr kai min kanw access edge :p
+                
+            if(!(map[i][j]) && map[i][j]->glyph == 'X') continue;
+            c = map[i][j]->glyph;
+            if(c == 'C' || c == 'B'){
+                object_type.push_back('M');
             }
+            else{
+                object_type.push_back('S');
+            }
+            manhatan_distance = (i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y());
+            positions.push_back(manhatan_distance); //manhattan distance 
+
+            accuracy.push_back(0.99 * (manhatan_distance/40.0) - 0.05); //pame ligo   
         }
     }
-    cout << "=== LIDAR DEBUG ===" << endl;
-
-    if (positions.empty()) {
-        cout << "Lidar sees nothing. Either the world is empty or you broke it." << endl;
-        return;
-    }
-
-    for (size_t i = 0; i < positions.size(); i++) {
-        cout << "Object " << i
-             << " | distance: " << positions[i]
-             << " | category: " << objects[i]
-             << " | accuracy: " << accuracy[i]
-             << endl;
-    }
-
-    cout << "===================" << endl;
-    
 }
 
 //radar sensor love 
@@ -449,32 +426,49 @@ void radar_sensor::extract_info(){
 
 
     }
-
-    cout << "=== CAMERA DEBUG ===" << endl;
-
-    if (positions.empty()) {
-        cout << "Camera sees absolutely nothing. Congrats, it's blind." << endl;
-        return;
-    }
-
-    for (size_t i = 0; i < positions.size(); i++) {
-        cout << "Object " << i
-             << " | distance: " << positions[i]
-            << " | speed: " << object_speed[i]
-             << endl;
-    }
-
-    cout << "====================" << endl;
-
 }
 
 //camera sensor 
 
-void camera_sensor::extract_info(){
-    moving_object* pointer;
-    
+camera_sensor::camera_sensor(object *** xartis , position * posi , int tax,direction * dire){
+    map = xartis;
+    thesi_amaksiou = posi;
+    speed = tax;
+    dir = dire;
 }
 
+void camera_sensor::extract_info(){
+
+    int manhatan_distance;
+    int nx = 0;
+    int ny = 0;
+    
+    objects.clear();
+    positions.clear();
+
+    //me diskolepse para poli afti i logiki
+    for(int i = -3; i <= 3; i++){ 
+        for(int j = 1; j <= 7; j++){
+            nx = thesi_amaksiou->get_x() + dir->dx * j - dir->dy * i; 
+            ny = thesi_amaksiou->get_y() + dir->dy * j + dir->dx * i;
+            if(nx < 1|| ny < 1 || nx > 40 || ny > 40 ){ 
+                break;
+            }
+
+            if(!(map[nx][ny])){
+                continue;
+            }
+            if(map[nx][ny]->glyph == 'X'){
+                continue;
+            }
+            objects.push_back(map[nx][ny]);
+            manhatan_distance = (nx - thesi_amaksiou->get_x()) + (ny - thesi_amaksiou->get_y());
+            positions.push_back(manhatan_distance);
+        }
+    }
+    cout<<"camera sees"<<objects.size()<<"objects";
+
+}
 
 
 //for moving_object
@@ -486,7 +480,7 @@ moving_object::moving_object(grid_world * grid):dir{1,0}{
 void moving_object::move(){
 }
 
-string moving_object::get_speed(){
+int moving_object::get_speed(){
     return speed;
 }
 
@@ -552,7 +546,7 @@ int car::car_count = 1;
 car::car(const parameters &p , grid_world * xartis)
         :moving_object(xartis)
     {
-        speed = "FULL_SPEED";
+        speed = 2;
         id = "car"+ to_string(car_count++);
         glyph = 'C';
         thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
@@ -588,7 +582,7 @@ bike::bike(const parameters &p,grid_world* grid)
             id = "bike" + to_string(bike_count);
             glyph = 'B';
             thesi.set_positions(rand() % (p.get_world_height()- 2),rand() % (p.get_world_width() - 2));
-            speed = "HALF_SPEED";
+            speed = 1;
         }
 
 void bike::move(){

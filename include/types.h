@@ -115,8 +115,9 @@ class sensors{
 
 class lidar_sensor : public sensors{
     private:
+        vector<object*> objects;
+        vector<char> object_type;
         vector<int> positions;
-        vector<char> objects;
         vector<float> accuracy;
     public:
         lidar_sensor(object *** xartis,position * posi,int tax,direction * dire);
@@ -125,20 +126,23 @@ class lidar_sensor : public sensors{
 
 class radar_sensor : public sensors{
     private:
+        vector<object*> objects;
         vector<int> positions;
-        vector<string> object_speed;
+        vector<int> object_speed;
         vector<direction> directions;
         vector<int> accuracy;
     public:
-        radar_sensor(object *** map,position * pos,int tax,direction * dire);
+        radar_sensor(object *** map,position * posi,int tax,direction * dire);
         void extract_info();
 
 };
 
 class camera_sensor : public sensors{
     private:
-        vector<object*> positions;
+        vector<object*> objects;
+        vector<int> positions;
     public:
+        camera_sensor(object *** xartis , position * posi , int tax,direction * dire);
         void extract_info();
 };
 
@@ -174,8 +178,8 @@ class self_driving_car : public object {
     private:
         lidar_sensor * lidar;
         radar_sensor * radar;
-        // camera_sensor camera;        // navigation_system ploigisi;
-        string speed;
+        camera_sensor * camera;      
+        int speed;
         direction dir;
     public:
         self_driving_car(parameters p,grid_world * plegma);
@@ -196,12 +200,12 @@ class wall : public object {
 class moving_object:public object{ 
     protected:
         grid_world *plegma;
-        string speed;
+        int speed;
         direction dir;
     public:
         virtual void move();
         moving_object(grid_world* grid);
-        string get_speed();
+        int get_speed();
         direction get_dir();
 };
 
