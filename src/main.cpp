@@ -41,7 +41,7 @@ int main(int argc, char ** argv ){
 
         
         plegma.debug(); //printarei kosmo 
-        std::this_thread::sleep_for(std::chrono::milliseconds(1500)); //to check the implementation
+        // std::this_thread::sleep_for(std::chrono::milliseconds(1500)); //to check the implementation
     }
 
     cout<<p.get_ticks()<<endl;

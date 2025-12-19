@@ -353,7 +353,10 @@ void lidar_sensor::extract_info(){
         for(int j = thesi_amaksiou->get_y() - 4; j < thesi_amaksiou->get_y() + 4; j++){
             if (i < 1 || i > 40 || j < 1 || j > 40) break;  //gia na min faw segfault gia na min kanw access nullptr kai min kanw access edge :p
                 
-            if(!(map[i][j]) && map[i][j]->glyph == 'X') continue;
+            if(!(map[i][j]) || map[i][j]->glyph == 'X') continue;
+            
+            if(i == thesi_amaksiou->get_x() && j == thesi_amaksiou->get_y()) continue;
+
             c = map[i][j]->glyph;
             if(c == 'C' || c == 'B'){
                 object_type.push_back('M');
@@ -361,12 +364,14 @@ void lidar_sensor::extract_info(){
             else{
                 object_type.push_back('S');
             }
+
             manhatan_distance = (i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y());
             positions.push_back(manhatan_distance); //manhattan distance 
-
+            objects.push_back(map[i][j]);
             accuracy.push_back(0.99 * (manhatan_distance/40.0) - 0.05); //pame ligo   
         }
     }
+    cout<<"lidar sees "<<objects.size()<<" objects"<<endl;
 }
 
 //radar sensor love 
@@ -399,6 +404,7 @@ void radar_sensor::extract_info(){
     object_speed.clear();    
     directions.clear();      
     accuracy.clear();
+    objects.clear();
 
     int start_x = thesi_amaksiou->get_x() + dir->dx;
     int start_y = thesi_amaksiou->get_y() + dir->dy;
@@ -422,10 +428,14 @@ void radar_sensor::extract_info(){
         object_speed.push_back(pointer->get_speed());
 
         directions.push_back(pointer->get_dir());
+
+        objects.push_back(map[nx][ny]);
         //TODO accuracy
 
 
     }
+    cout<<"radar sees "<<objects.size()<<" objects "<<endl;
+
 }
 
 //camera sensor 
@@ -466,7 +476,7 @@ void camera_sensor::extract_info(){
             positions.push_back(manhatan_distance);
         }
     }
-    cout<<"camera sees"<<objects.size()<<"objects";
+    cout<<"camera sees "<<objects.size()<<" objects"<<endl;
 
 }
 
