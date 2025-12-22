@@ -36,12 +36,13 @@ int main(int argc, char ** argv ){
 
     while(kosmos.get_ticks() < p.get_ticks() && !kosmos.is_finished()){
 
+        amaksi.print_direction();
         kosmos.update(plegma,amaksi); //kanei update sto grid tin current thesi twn pragmatwn 
         
 
         
         plegma.debug(); //printarei kosmo 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(1500)); //to check the implementation
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500)); //to check the implementation
     }
 
     cout<<p.get_ticks()<<endl;

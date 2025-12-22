@@ -118,7 +118,9 @@ class lidar_sensor : public sensors{
         vector<object*> objects;
         vector<char> object_type;
         vector<int> positions;
-        vector<float> accuracy;
+        vector<float> distance_accuracy;
+        vector<float> classification_accuracy;
+
     public:
         lidar_sensor(object *** xartis,position * posi,int tax,direction * dire);
         void extract_info();
@@ -130,7 +132,7 @@ class radar_sensor : public sensors{
         vector<int> positions;
         vector<int> object_speed;
         vector<direction> directions;
-        vector<int> accuracy;
+        vector<float> accuracy;
     public:
         radar_sensor(object *** map,position * posi,int tax,direction * dire);
         void extract_info();
@@ -141,6 +143,8 @@ class camera_sensor : public sensors{
     private:
         vector<object*> objects;
         vector<int> positions;
+        vector<float> distance_accuracy;
+        vector<float> classification_accuracy;
     public:
         camera_sensor(object *** xartis , position * posi , int tax,direction * dire);
         void extract_info();
@@ -186,8 +190,8 @@ class self_driving_car : public object {
         void accelerate();
         void decelerate();
         void turn();
-        void debug_radar();
         void extract_from_sensors();
+        void print_direction();
         ~self_driving_car(); //i allocated memory for the lidar and radar and cmaera sensor l,ao
 };
 

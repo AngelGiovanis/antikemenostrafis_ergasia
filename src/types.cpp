@@ -322,6 +322,21 @@ void self_driving_car::extract_from_sensors(){
     //these make my code go boom boom sergfault 
 }
 
+void self_driving_car::print_direction(){
+    if(dir.dx == 0 && dir.dy == 1){
+        cout<<"car is facing right"<<endl;
+    }
+    else if(dir.dx == 1 && dir.dy == 0){
+        cout<<"car is facing down"<<endl;
+    }
+    else if( dir.dx == -1 && dir.dy == 0){
+        cout<<"car is facing up"<<endl;
+    }
+    else{
+        cout<<"car is facing left"<<endl;
+    }
+}
+
 
 self_driving_car::~self_driving_car(){
     //destructor free the memory for lidar and radar
@@ -345,10 +360,14 @@ void lidar_sensor::extract_info(){
 
     positions.clear();
     objects.clear();
-    accuracy.clear();
+    distance_accuracy.clear();
+    classification_accuracy.clear();
 
     char c;
     int manhatan_distance = 0;
+    float distance_confidence = 0.99;
+    float classification_confidence = 0.87;
+
     for(int i = thesi_amaksiou->get_x() - 4; i < thesi_amaksiou->get_x() + 4; i++){
         for(int j = thesi_amaksiou->get_y() - 4; j < thesi_amaksiou->get_y() + 4; j++){
             if (i < 1 || i > 40 || j < 1 || j > 40) break;  //gia na min faw segfault gia na min kanw access nullptr kai min kanw access edge :p
@@ -358,6 +377,8 @@ void lidar_sensor::extract_info(){
             if(i == thesi_amaksiou->get_x() && j == thesi_amaksiou->get_y()) continue;
 
             c = map[i][j]->glyph;
+
+            //category
             if(c == 'C' || c == 'B'){
                 object_type.push_back('M');
             }
@@ -365,13 +386,32 @@ void lidar_sensor::extract_info(){
                 object_type.push_back('S');
             }
 
-            manhatan_distance = (i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y());
+            //distance 
+            manhatan_distance = abs((i-thesi_amaksiou->get_x()))+abs((j-thesi_amaksiou->get_y()));
             positions.push_back(manhatan_distance); //manhattan distance 
+            
             objects.push_back(map[i][j]);
-            accuracy.push_back(0.99 * (manhatan_distance/40.0) - 0.05); //pame ligo   
+            
+
+            //ippologismos accuracυ
+            //TODO noise and category type
+
+            distance_accuracy.push_back(distance_confidence* (1.0 - (manhatan_distance/9.0)));
+            classification_accuracy.push_back(classification_confidence* (1.0 - (manhatan_distance/9.0)));
+
         }
     }
     cout<<"lidar sees "<<objects.size()<<" objects"<<endl;
+
+    for (size_t i = 0; i < objects.size(); i++) {
+    cout << "[" << i << "] "
+         << "glyph: " << objects[i]->glyph
+         << " | distance: " << positions[i]
+         << " | type: " << object_type[i]
+         << " | distance accuracy: " << distance_accuracy[i]
+         << " | classification accuracy: " << classification_accuracy[i]
+         << endl;
+}
 }
 
 //radar sensor love 
@@ -409,6 +449,7 @@ void radar_sensor::extract_info(){
     int start_x = thesi_amaksiou->get_x() + dir->dx;
     int start_y = thesi_amaksiou->get_y() + dir->dy;
     int manhatan_distance = 0;
+    float confidence = 0.95;
 
     for(int i = 0; i < 12; i++){
         int nx = start_x + i * dir->dx;
@@ -422,20 +463,36 @@ void radar_sensor::extract_info(){
         }
 
         pointer = static_cast<moving_object*>(map[nx][ny]);
-        manhatan_distance = (nx-thesi_amaksiou->get_x())+(ny-thesi_amaksiou->get_y());
+        manhatan_distance = abs((nx-thesi_amaksiou->get_x()))+abs((ny-thesi_amaksiou->get_y()));
+        
+        //apostasi
         positions.push_back(manhatan_distance);
 
+        //speed 
         object_speed.push_back(pointer->get_speed());
 
+        //direction
         directions.push_back(pointer->get_dir());
 
+        //TODO random noise
+        accuracy.push_back(confidence * ( 1 - (manhatan_distance/12.0)));
+
         objects.push_back(map[nx][ny]);
-        //TODO accuracy
+
 
 
     }
     cout<<"radar sees "<<objects.size()<<" objects "<<endl;
 
+    for (size_t i = 0; i < objects.size(); i++) {
+        cout << "[" << i << "] "
+            << "glyph: " << objects[i]->glyph
+            << " | distance: " << positions[i]
+            << " | speed: " << object_speed[i]
+             << " | confidence: " << accuracy[i]
+            << " | dir: (" << directions[i].dx << "," << directions[i].dy << ")"
+            << endl;
+}
 }
 
 //camera sensor 
@@ -452,6 +509,8 @@ void camera_sensor::extract_info(){
     int manhatan_distance;
     int nx = 0;
     int ny = 0;
+    float distance_confidence = 0.87;
+    float classification_confidence = 0.95; 
     
     objects.clear();
     positions.clear();
@@ -459,25 +518,44 @@ void camera_sensor::extract_info(){
     //me diskolepse para poli afti i logiki
     for(int i = -3; i <= 3; i++){ 
         for(int j = 1; j <= 7; j++){
+
             nx = thesi_amaksiou->get_x() + dir->dx * j - dir->dy * i; 
             ny = thesi_amaksiou->get_y() + dir->dy * j + dir->dx * i;
+            
             if(nx < 1|| ny < 1 || nx > 40 || ny > 40 ){ 
                 break;
             }
-
             if(!(map[nx][ny])){
                 continue;
             }
             if(map[nx][ny]->glyph == 'X'){
                 continue;
+            
             }
+
             objects.push_back(map[nx][ny]);
-            manhatan_distance = (nx - thesi_amaksiou->get_x()) + (ny - thesi_amaksiou->get_y());
+
+            manhatan_distance = abs((nx-thesi_amaksiou->get_x()))+abs((ny-thesi_amaksiou->get_y()));
+            
+            //position
             positions.push_back(manhatan_distance);
+
+            //accuracy
+            distance_accuracy.push_back(distance_confidence* (1.0 - (manhatan_distance/7.0)));
+            classification_accuracy.push_back(classification_confidence * (1 - (manhatan_distance/7.0)));
+
         }
     }
     cout<<"camera sees "<<objects.size()<<" objects"<<endl;
+    for (size_t i = 0; i < objects.size(); i++) {
+    cout << "[" << i << "] "
+         << "glyph: " << objects[i]->glyph
+         << " | distance: " << positions[i]
+         << " | distance accuract: " << distance_accuracy[i]
+         << " | classification accuracy: " << classification_accuracy[i]
 
+         << endl;
+    }
 }
 
 
