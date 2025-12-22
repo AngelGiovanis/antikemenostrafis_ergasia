@@ -75,7 +75,10 @@ class object{
     public:
         char glyph;
         position thesi;
+        string get_id();
         virtual void update();
+        virtual bool is_moving();
+
 };
 
 class navigation_system{
@@ -86,21 +89,17 @@ class navigation_system{
         void make_decision();
     
 };
-
-
-//TODO SENSORES 
-/*•2.2.1 Αισθητήρας Lidar (Lidar Sensor) Εμβέλεια: 9 κελιά
-• Οπτικό πεδίο: Ένα τετράγωνο 81 κελιών, με κεντρικό κελί στο όχημα (δηλαδή
-όραση «360 μοιρών» 9x9 κελιών)
-• Ανιχνεύει: Όλα τα αντικείμενα (στατικά και κινούμενα), όχι όμως χρώμα φαναριών ή κείμενο πινακίδας
-• Επιστρέφει: Απόσταση, κατηγορία αντικειμένου, βεβαιότητα
-• Ακρίβεια: Εξαιρετική για απόσταση, μέτρια για κατηγοριοποίηση
-2.2.2 Αισθητήρας ραντάρ (Radar Sensor)
-• Εμβέλεια: 12 κελιά
-• Οπτικό πεδίο: 12 κελιά ευθεία μπροστά
-• Ανιχνεύει: Μόνο κινούμενα αντικείμενα
-• Επιστρέφει: Απόσταση, ταχύτητα, κατεύθυνση κίνησης, βεβαιότητα
-• Ακρίβεια: Υψηλή για απόσταση και για κατηγοριοποίηση*/
+struct sensor_reading {
+    string id; //taytotita
+    position pos; //position
+    int distance; //distance akraio e
+    string type; //type car or bike or whatever
+    int speed; //speed 
+    direction dir; //direction
+    string sign_text;
+    char traffic_light;
+    float confidence; //confidence
+};
 
 class sensors{
     protected:
@@ -109,46 +108,59 @@ class sensors{
         direction * dir;
         int speed;
     public:
-        virtual void extract_info();
+        virtual vector<sensor_reading> extract_info();
         
 };
 
 class lidar_sensor : public sensors{
     private:
-        vector<object*> objects;
-        vector<char> object_type;
-        vector<int> positions;
-        vector<float> distance_accuracy;
-        vector<float> classification_accuracy;
+        vector<sensor_reading> lidar_readings;
+        // vector<object*> objects;
+        // vector<char> object_type;
+        // vector<int> positions;
+        // vector<float> distance_accuracy;
+        // vector<float> classification_accuracy;
 
     public:
         lidar_sensor(object *** xartis,position * posi,int tax,direction * dire);
-        void extract_info();
+        vector<sensor_reading> extract_info();
 };
 
 class radar_sensor : public sensors{
     private:
-        vector<object*> objects;
-        vector<int> positions;
-        vector<int> object_speed;
-        vector<direction> directions;
-        vector<float> accuracy;
+        vector<sensor_reading> radar_readings;
+        // vector<object*> objects;
+        // vector<int> positions;
+        // vector<int> object_speed;
+        // vector<direction> directions;
+        // vector<float> accuracy;
     public:
         radar_sensor(object *** map,position * posi,int tax,direction * dire);
-        void extract_info();
+        vector<sensor_reading> extract_info();
 
 };
 
 class camera_sensor : public sensors{
     private:
-        vector<object*> objects;
-        vector<int> positions;
-        vector<float> distance_accuracy;
-        vector<float> classification_accuracy;
+        vector<sensor_reading> camera_readings;
+        // vector<object*> objects;
+        // vector<int> positions;
+        // vector<float> distance_accuracy;
+        // vector<float> classification_accuracy;
     public:
         camera_sensor(object *** xartis , position * posi , int tax,direction * dire);
-        void extract_info();
+        vector<sensor_reading> extract_info();
 };
+
+class sensor_fusion_engine{
+    private:
+        vector<sensor_reading> fused_sensor_readings;
+    public:
+        void fuse_sensor_data(lidar_sensor * lidar,radar_sensor * radar,camera_sensor * camera);
+        sensor_fusion_engine();
+        ~sensor_fusion_engine();
+};
+
 
 
 class grid_world{
@@ -182,7 +194,8 @@ class self_driving_car : public object {
     private:
         lidar_sensor * lidar;
         radar_sensor * radar;
-        camera_sensor * camera;      
+        camera_sensor * camera;
+        sensor_fusion_engine fusing;
         int speed;
         direction dir;
     public:
@@ -211,6 +224,13 @@ class moving_object:public object{
         moving_object(grid_world* grid);
         int get_speed();
         direction get_dir();
+        bool is_moving();
+};
+
+class static_object:public object{
+    private:
+    public:
+        virtual bool is_moving();
 };
 
 class car: public moving_object{
@@ -229,14 +249,14 @@ class bike: public moving_object{
         void move();
 };
 
-class parked_car : public object{
+class parked_car : public static_object{
     private:
         static int parked_car_count;
     public:
         parked_car(const parameters &p);
 };
 
-class trafic_light:public object{ //TODO den mou aresei auti i ilopoiisi
+class trafic_light:public static_object{ //TODO den mou aresei auti i ilopoiisi
     private:
         string katastasi;
         int fanari_ticks;

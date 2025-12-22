@@ -286,6 +286,15 @@ world::~world(){
 void object::update(){
 }
 
+bool object::is_moving(){
+    return false;
+}
+
+string object::get_id(){
+    return id;
+}
+
+
 //for waaaalllllllllaaalallalalala
 wall::wall(){
     glyph = 'X';
@@ -343,9 +352,17 @@ self_driving_car::~self_driving_car(){
 }
 
 
+//for sensor fusion engine
+sensor_fusion_engine::sensor_fusion_engine(){
+
+}
+
+sensor_fusion_engine::~sensor_fusion_engine(){
+    
+}
 
 //for sensors 
-void sensors::extract_info(){
+vector<sensor_reading> sensors::extract_info(){
 }
 
 
@@ -356,12 +373,14 @@ lidar_sensor::lidar_sensor(object *** xartis , position * posi , int tax,directi
     dir = dire;
 }
 
-void lidar_sensor::extract_info(){
+vector<sensor_reading> lidar_sensor::extract_info(){
 
-    positions.clear();
-    objects.clear();
-    distance_accuracy.clear();
-    classification_accuracy.clear();
+    // positions.clear();
+    // objects.clear();
+    // distance_accuracy.clear();
+    // classification_accuracy.clear();
+
+    lidar_readings.clear();
 
     char c;
     int manhatan_distance = 0;
@@ -376,42 +395,65 @@ void lidar_sensor::extract_info(){
             
             if(i == thesi_amaksiou->get_x() && j == thesi_amaksiou->get_y()) continue;
 
-            c = map[i][j]->glyph;
+            // c = map[i][j]->glyph;
 
-            //category
-            if(c == 'C' || c == 'B'){
-                object_type.push_back('M');
-            }
-            else{
-                object_type.push_back('S');
-            }
+            // //category
+            // if(c == 'C' || c == 'B'){
+            //     object_type.push_back('M');
+            // }
+            // else{
+            //     object_type.push_back('S');
+            // }
 
             //distance 
             manhatan_distance = abs((i-thesi_amaksiou->get_x()))+abs((j-thesi_amaksiou->get_y()));
-            positions.push_back(manhatan_distance); //manhattan distance 
+            // positions.push_back(manhatan_distance); //manhattan distance 
             
-            objects.push_back(map[i][j]);
+            // objects.push_back(map[i][j]);
             
 
             //ippologismos accuracυ
             //TODO noise and category type
 
-            distance_accuracy.push_back(distance_confidence* (1.0 - (manhatan_distance/9.0)));
-            classification_accuracy.push_back(classification_confidence* (1.0 - (manhatan_distance/9.0)));
+            // distance_accuracy.push_back(distance_confidence* (1.0 - (manhatan_distance/9.0)));
+            // classification_accuracy.push_back(classification_confidence* (1.0 - (manhatan_distance/9.0)));
 
+            //create sensor reading
+            sensor_reading sr;
+            sr.id = map[i][j]->get_id();
+            sr.pos = {-1,-1};
+            sr.distance = manhatan_distance;
+            
+            c = map[i][j]->glyph;
+
+            //category
+            if(c == 'C' || c == 'B'){
+                sr.type = "moving";
+            }
+            else{
+                sr.type = "static";
+            }
+
+            sr.speed = -1;
+            sr.dir = {-1,-1};
+            sr.sign_text = "N/A";
+            sr.traffic_light = 'N';
+            sr.confidence = (distance_confidence* (1.0 - (manhatan_distance/9.0)) * classification_confidence * (1.0 - (manhatan_distance/9.0)));
+            lidar_readings.push_back(sr);
         }
     }
-    cout<<"lidar sees "<<objects.size()<<" objects"<<endl;
+    return lidar_readings;
+//     cout<<"lidar sees "<<objects.size()<<" objects"<<endl; debugging purposes
 
-    for (size_t i = 0; i < objects.size(); i++) {
-    cout << "[" << i << "] "
-         << "glyph: " << objects[i]->glyph
-         << " | distance: " << positions[i]
-         << " | type: " << object_type[i]
-         << " | distance accuracy: " << distance_accuracy[i]
-         << " | classification accuracy: " << classification_accuracy[i]
-         << endl;
-}
+//     for (size_t i = 0; i < objects.size(); i++) {
+//     cout << "[" << i << "] "
+//          << "glyph: " << objects[i]->glyph
+//          << " | distance: " << positions[i]
+//          << " | type: " << object_type[i]
+//          << " | distance accuracy: " << distance_accuracy[i]
+//          << " | classification accuracy: " << classification_accuracy[i]
+//          << endl;
+// }
 }
 
 //radar sensor love 
@@ -423,7 +465,7 @@ radar_sensor::radar_sensor(object *** xartis , position * posi , int tax,directi
     dir = dire;
 } //TODO tha to allaksw kai tha valw ton idio constructor giati kanei tin idia douleia 
 
-void radar_sensor::extract_info(){
+vector<sensor_reading> radar_sensor::extract_info(){
     moving_object* pointer;
     // int i = thesi_amaksiou->get_x();
     // for(int j = thesi_amaksiou->get_y() + 1; i < thesi_amaksiou->get_x() + 4; i++){
@@ -440,12 +482,13 @@ void radar_sensor::extract_info(){
 
     //auto thelei kai test gia segfault
 
-    positions.clear();
-    object_speed.clear();    
-    directions.clear();      
-    accuracy.clear();
-    objects.clear();
-
+    // positions.clear();
+    // object_speed.clear();    
+    // directions.clear();      
+    // accuracy.clear();
+    // objects.clear();
+    radar_readings.clear();
+    
     int start_x = thesi_amaksiou->get_x() + dir->dx;
     int start_y = thesi_amaksiou->get_y() + dir->dy;
     int manhatan_distance = 0;
@@ -458,7 +501,7 @@ void radar_sensor::extract_info(){
         if(nx < 1|| ny < 1 || nx > 40 || ny > 40 ){ //no segfault , no checking empty and non moving objects 
             break;
         }
-        if(!(map[nx][ny]) || (map[nx][ny]->glyph != 'C' && map[nx][ny]->glyph != 'B')){
+        if(!(map[nx][ny]) || !(map[nx][ny]->is_moving())){
             continue;
         }
 
@@ -466,33 +509,49 @@ void radar_sensor::extract_info(){
         manhatan_distance = abs((nx-thesi_amaksiou->get_x()))+abs((ny-thesi_amaksiou->get_y()));
         
         //apostasi
-        positions.push_back(manhatan_distance);
+        // positions.push_back(manhatan_distance);
 
         //speed 
-        object_speed.push_back(pointer->get_speed());
+        // object_speed.push_back(pointer->get_speed());
 
         //direction
-        directions.push_back(pointer->get_dir());
+        // directions.push_back(pointer->get_dir());
 
         //TODO random noise
-        accuracy.push_back(confidence * ( 1 - (manhatan_distance/12.0)));
+        // accuracy.push_back(confidence * ( 1 - (manhatan_distance/12.0)));
 
-        objects.push_back(map[nx][ny]);
+        // objects.push_back(map[nx][ny]);
 
 
+        //put the fries in the bag bro(put the data in the struct)
+            sensor_reading sr;
+            sr.id = map[nx][ny]->get_id();
+            sr.pos = {-1,-1};
+            sr.distance = manhatan_distance;
+            
+            char c = map[nx][ny]->glyph;
 
+            //category
+            sr.type = "moving";
+
+            sr.speed = pointer->get_speed();
+            sr.dir = pointer->get_dir();
+            sr.sign_text = "N/A";
+            sr.traffic_light = 'N';
+            sr.confidence = (confidence* (1.0 - (manhatan_distance/9.0)));
+            radar_readings.push_back(sr);
     }
-    cout<<"radar sees "<<objects.size()<<" objects "<<endl;
+    // cout<<"radar sees "<<objects.size()<<" objects "<<endl;
 
-    for (size_t i = 0; i < objects.size(); i++) {
-        cout << "[" << i << "] "
-            << "glyph: " << objects[i]->glyph
-            << " | distance: " << positions[i]
-            << " | speed: " << object_speed[i]
-             << " | confidence: " << accuracy[i]
-            << " | dir: (" << directions[i].dx << "," << directions[i].dy << ")"
-            << endl;
-}
+//     for (size_t i = 0; i < objects.size(); i++) {
+//         cout << "[" << i << "] "
+//             << "glyph: " << objects[i]->glyph
+//             << " | distance: " << positions[i]
+//             << " | speed: " << object_speed[i]
+//              << " | confidence: " << accuracy[i]
+//             << " | dir: (" << directions[i].dx << "," << directions[i].dy << ")"
+//             << endl;
+//      }
 }
 
 //camera sensor 
@@ -504,7 +563,7 @@ camera_sensor::camera_sensor(object *** xartis , position * posi , int tax,direc
     dir = dire;
 }
 
-void camera_sensor::extract_info(){
+vector<sensor_reading> camera_sensor::extract_info(){
 
     int manhatan_distance;
     int nx = 0;
@@ -512,8 +571,9 @@ void camera_sensor::extract_info(){
     float distance_confidence = 0.87;
     float classification_confidence = 0.95; 
     
-    objects.clear();
-    positions.clear();
+    // objects.clear();
+    // positions.clear();
+    camera_readings.clear();
 
     //me diskolepse para poli afti i logiki
     for(int i = -3; i <= 3; i++){ 
@@ -533,29 +593,84 @@ void camera_sensor::extract_info(){
             
             }
 
-            objects.push_back(map[nx][ny]);
+            // objects.push_back(map[nx][ny]);
 
             manhatan_distance = abs((nx-thesi_amaksiou->get_x()))+abs((ny-thesi_amaksiou->get_y()));
             
             //position
-            positions.push_back(manhatan_distance);
+            // positions.push_back(manhatan_distance);
 
             //accuracy
-            distance_accuracy.push_back(distance_confidence* (1.0 - (manhatan_distance/7.0)));
-            classification_accuracy.push_back(classification_confidence * (1 - (manhatan_distance/7.0)));
+            // distance_accuracy.push_back(distance_confidence* (1.0 - (manhatan_distance/10.0)));
+            // classification_accuracy.push_back(classification_confidence * (1.0 - (manhatan_distance/10.0)));
+
+            sensor_reading sr;
+
+            sr.id = map[nx][ny]->get_id();
+            sr.pos = map[nx][ny]->thesi;
+            sr.distance = manhatan_distance;
+            
+            char c = map[nx][ny]->glyph;
+
+            //category
+            if(map[nx][ny]->is_moving()){ //virtual func to check if it is a moving object instead of checking if its glyph is C or B 
+                //for getting info from moving_object
+                moving_object* moving_pointer;
+                moving_pointer = static_cast<moving_object*>(map[nx][ny]);
+                sr.speed = moving_pointer->get_speed();
+                
+                if(sr.speed == 1){
+                    sr.type = "bike";
+                }
+                else{
+                    sr.type = "car";
+                }
+
+                sr.dir = moving_pointer->get_dir();
+                
+                sr.sign_text = "N/A";
+                sr.traffic_light = 'N';
+
+            }
+            else{
+                sr.speed = -1;
+                sr.dir = {-1,-1};
+                
+                if(map[nx][ny]->glyph == 'G' || map[nx][ny]->glyph == 'Y' || map[nx][ny]->glyph == 'R'){//if it is a light
+                    sr.type = "traffic light";
+                    sr.sign_text = "N/A";
+                    sr.traffic_light = map[nx][ny]->glyph;
+                }
+                else if(map[nx][ny]->glyph == 'P') {//if parked car
+                    sr.type = "parked car";
+                    sr.sign_text = "N/A";
+                    sr.traffic_light = 'N';
+                }
+                else if(map[nx][ny]->glyph == 'S'){//stop sign
+                    sr.type = "stop sign";
+                    sr.sign_text = "STOP";
+                    sr.traffic_light = 'N';
+                }
+
+            }
+
+            sr.confidence = (distance_confidence* (1.0 - (manhatan_distance/10.0)) * classification_confidence * (1.0 - (manhatan_distance/10.0)));
+            camera_readings.push_back(sr);
+
+
 
         }
     }
-    cout<<"camera sees "<<objects.size()<<" objects"<<endl;
-    for (size_t i = 0; i < objects.size(); i++) {
-    cout << "[" << i << "] "
-         << "glyph: " << objects[i]->glyph
-         << " | distance: " << positions[i]
-         << " | distance accuract: " << distance_accuracy[i]
-         << " | classification accuracy: " << classification_accuracy[i]
+    // cout<<"camera sees "<<objects.size()<<" objects"<<endl;
+    // for (size_t i = 0; i < objects.size(); i++) {
+    // cout << "[" << i << "] "
+    //      << "glyph: " << objects[i]->glyph
+    //      << " | distance: " << positions[i]
+    //      << " | distance accuract: " << distance_accuracy[i]
+    //      << " | classification accuracy: " << classification_accuracy[i]
 
-         << endl;
-    }
+    //      << endl;
+    // }
 }
 
 
@@ -576,6 +691,14 @@ direction moving_object::get_dir(){
     return dir;
 }
 
+bool moving_object::is_moving(){
+    return true;
+}
+
+//for static object
+bool static_object::is_moving(){
+    return false;
+}
 
 //gia traffic_light
 

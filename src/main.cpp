@@ -46,5 +46,5 @@ int main(int argc, char ** argv ){
     }
 
     cout<<p.get_ticks()<<endl;
-    return 0;
+    return 1;
 }
