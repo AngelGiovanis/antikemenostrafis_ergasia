@@ -346,19 +346,6 @@ void self_driving_car::print_direction(){
     }
 }
 
-lidar_sensor * self_driving_car::get_lidar_sensor_pointer(){
-    return lidar;
-}
-
-radar_sensor * self_driving_car::get_radar_sensor_pointer(){
-    return radar;
-}
-
-camera_sensor * self_driving_car::get_camera_sensor_pointer(){
-    return camera;
-}
-
-
 
 self_driving_car::~self_driving_car(){
     //TODO destructor free the memory for lidar and radar
@@ -367,42 +354,21 @@ self_driving_car::~self_driving_car(){
 
 
 
+//for sensor fusion engine
+
+// void sensor_fusion_engine::extract_sensor_data(vector<sensor_reading> &lidar,vector<sensor_reading> &radar,vector<sensor_reading> &camera){
+//     lidar->extract_info();
+// }
+
+sensor_fusion_engine::~sensor_fusion_engine(){
+    
+}
 
 //for sensors 
 vector<sensor_reading> sensors::extract_info(){
-    
-}
-
-// for sensor fusion engine
-
-sensor_fusion_engine::sensor_fusion_engine(){
-    lidar = nullptr;
-    radar = nullptr;
-    camera = nullptr;
 }
 
 
-void sensor_fusion_engine::extract_sensor_data(){
-    
-    lidar_readings = lidar->extract_info();
-    radar_readings = radar->extract_info(); //puts all the data in the vector of the sensor fusion engine 
-    camera_readings = camera->extract_info();
-}
-
-void sensor_fusion_engine::fuse_sensor_data(){
-    //fuse all the data 
-}
-
-
-sensor_fusion_engine::sensor_fusion_engine(self_driving_car * amaksi){
-    lidar = amaksi-> get_lidar_sensor_pointer();
-    radar = amaksi-> get_radar_sensor_pointer();
-    camera = amaksi-> get_camera_sensor_pointer();
-}
-
-sensor_fusion_engine::~sensor_fusion_engine(){
-  
-}
 lidar_sensor::lidar_sensor(object *** xartis , position * posi , int tax,direction * dire){
     map = xartis;
     thesi_amaksiou = posi;
@@ -411,6 +377,11 @@ lidar_sensor::lidar_sensor(object *** xartis , position * posi , int tax,directi
 }
 
 vector<sensor_reading> lidar_sensor::extract_info(){
+
+    // positions.clear();
+    // objects.clear();
+    // distance_accuracy.clear();
+    // classification_accuracy.clear();
 
     lidar_readings.clear();
 
@@ -427,11 +398,29 @@ vector<sensor_reading> lidar_sensor::extract_info(){
             
             if(i == thesi_amaksiou->get_x() && j == thesi_amaksiou->get_y()) continue;
 
+            // c = map[i][j]->glyph;
+
+            // //category
+            // if(c == 'C' || c == 'B'){
+            //     object_type.push_back('M');
+            // }
+            // else{
+            //     object_type.push_back('S');
+            // }
+
             //distance 
             manhatan_distance = abs((i-thesi_amaksiou->get_x()))+abs((j-thesi_amaksiou->get_y()));
+            // positions.push_back(manhatan_distance); //manhattan distance 
+            
+            // objects.push_back(map[i][j]);
+            
 
-            //ippologismos accuracy
+            //ippologismos accuracυ
             //TODO noise and category type
+
+            // distance_accuracy.push_back(distance_confidence* (1.0 - (manhatan_distance/9.0)));
+            // classification_accuracy.push_back(classification_confidence* (1.0 - (manhatan_distance/9.0)));
+
             //create sensor reading
             sensor_reading sr;
             sr.id = map[i][j]->get_id();
@@ -457,6 +446,17 @@ vector<sensor_reading> lidar_sensor::extract_info(){
         }
     }
     return lidar_readings;
+//     cout<<"lidar sees "<<objects.size()<<" objects"<<endl; debugging purposes
+
+//     for (size_t i = 0; i < objects.size(); i++) {
+//     cout << "[" << i << "] "
+//          << "glyph: " << objects[i]->glyph
+//          << " | distance: " << positions[i]
+//          << " | type: " << object_type[i]
+//          << " | distance accuracy: " << distance_accuracy[i]
+//          << " | classification accuracy: " << classification_accuracy[i]
+//          << endl;
+// }
 }
 
 //radar sensor love 
@@ -470,8 +470,26 @@ radar_sensor::radar_sensor(object *** xartis , position * posi , int tax,directi
 
 vector<sensor_reading> radar_sensor::extract_info(){
     moving_object* pointer;
+    // int i = thesi_amaksiou->get_x();
+    // for(int j = thesi_amaksiou->get_y() + 1; i < thesi_amaksiou->get_x() + 4; i++){
+    //     if (i >= 0 && i < 40 && j >= 0 && j < 40 && map[i][j] && map[i][j]->glyph != 'X') { //gia na min faw segfault gia na min kanw access nullptr kai min kanw access edge X :p
+    //         if(map[i][j] && map[i][j]->glyph != 'X' && (map[i][j]->glyph == 'B' || map[i][j]->glyph == 'C')){
+    //             positions.push_back((i-thesi_amaksiou->get_x())+(j-thesi_amaksiou->get_y())); //manhattan distance 
+    //             pointer = static_cast<moving_object*>(map[i][j]);
+    //             object_speed.push_back(pointer->get_speed());
     //             //TODO katefthinsi
     //             //TODO vevaiotita
+    //         }
+    //     }
+    // }
+
+    //auto thelei kai test gia segfault
+
+    // positions.clear();
+    // object_speed.clear();    
+    // directions.clear();      
+    // accuracy.clear();
+    // objects.clear();
     radar_readings.clear();
     
     int start_x = thesi_amaksiou->get_x() + dir->dx;
@@ -492,7 +510,21 @@ vector<sensor_reading> radar_sensor::extract_info(){
 
         pointer = static_cast<moving_object*>(map[nx][ny]);
         manhatan_distance = abs((nx-thesi_amaksiou->get_x()))+abs((ny-thesi_amaksiou->get_y()));
+        
+        //apostasi
+        // positions.push_back(manhatan_distance);
+
+        //speed 
+        // object_speed.push_back(pointer->get_speed());
+
+        //direction
+        // directions.push_back(pointer->get_dir());
+
         //TODO random noise
+        // accuracy.push_back(confidence * ( 1 - (manhatan_distance/12.0)));
+
+        // objects.push_back(map[nx][ny]);
+
 
         //put the fries in the bag bro(put the data in the struct)
             sensor_reading sr;
@@ -513,6 +545,17 @@ vector<sensor_reading> radar_sensor::extract_info(){
             radar_readings.push_back(sr);
     }
     return radar_readings;
+    // cout<<"radar sees "<<objects.size()<<" objects "<<endl;
+
+//     for (size_t i = 0; i < objects.size(); i++) {
+//         cout << "[" << i << "] "
+//             << "glyph: " << objects[i]->glyph
+//             << " | distance: " << positions[i]
+//             << " | speed: " << object_speed[i]
+//              << " | confidence: " << accuracy[i]
+//             << " | dir: (" << directions[i].dx << "," << directions[i].dy << ")"
+//             << endl;
+//      }
 }
 
 //camera sensor 
@@ -532,6 +575,8 @@ vector<sensor_reading> camera_sensor::extract_info(){
     float distance_confidence = 0.87;
     float classification_confidence = 0.95; 
     
+    // objects.clear();
+    // positions.clear();
     camera_readings.clear();
 
     //me diskolepse para poli afti i logiki
@@ -552,7 +597,16 @@ vector<sensor_reading> camera_sensor::extract_info(){
             
             }
 
+            // objects.push_back(map[nx][ny]);
+
             manhatan_distance = abs((nx-thesi_amaksiou->get_x()))+abs((ny-thesi_amaksiou->get_y()));
+            
+            //position
+            // positions.push_back(manhatan_distance);
+
+            //accuracy
+            // distance_accuracy.push_back(distance_confidence* (1.0 - (manhatan_distance/10.0)));
+            // classification_accuracy.push_back(classification_confidence * (1.0 - (manhatan_distance/10.0)));
 
             sensor_reading sr;
 
@@ -612,7 +666,16 @@ vector<sensor_reading> camera_sensor::extract_info(){
         }
     }
     return camera_readings;
+    // cout<<"camera sees "<<objects.size()<<" objects"<<endl;
+    // for (size_t i = 0; i < objects.size(); i++) {
+    // cout << "[" << i << "] "
+    //      << "glyph: " << objects[i]->glyph
+    //      << " | distance: " << positions[i]
+    //      << " | distance accuract: " << distance_accuracy[i]
+    //      << " | classification accuracy: " << classification_accuracy[i]
 
+    //      << endl;
+    // }
 }
 
 
@@ -739,6 +802,19 @@ bike::bike(const parameters &p,grid_world* grid)
         }
 
 void bike::move(){
+    // if(thesi.get_x() - 1 != 0){
+    //     plegma->change_char(thesi.get_x(),thesi.get_y(),nullptr); // kane to current teleia
+        
+    //     thesi.set_x(thesi.get_x() + dir.dx);
+    //     thesi.set_y(thesi.get_y() + dir.dy);
+
+
+    //     //kane to apo panw teleia
+    //     plegma->change_char(thesi.get_x(),thesi.get_y(),this);
+    // }
+    // else{
+
+    // }
     if (rand() % 2)
         dir = { dir.dy, -dir.dx };  
     else

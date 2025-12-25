@@ -115,6 +115,11 @@ class sensors{
 class lidar_sensor : public sensors{
     private:
         vector<sensor_reading> lidar_readings;
+        // vector<object*> objects;
+        // vector<char> object_type;
+        // vector<int> positions;
+        // vector<float> distance_accuracy;
+        // vector<float> classification_accuracy;
 
     public:
         lidar_sensor(object *** xartis,position * posi,int tax,direction * dire);
@@ -124,6 +129,11 @@ class lidar_sensor : public sensors{
 class radar_sensor : public sensors{
     private:
         vector<sensor_reading> radar_readings;
+        // vector<object*> objects;
+        // vector<int> positions;
+        // vector<int> object_speed;
+        // vector<direction> directions;
+        // vector<float> accuracy;
     public:
         radar_sensor(object *** map,position * posi,int tax,direction * dire);
         vector<sensor_reading> extract_info();
@@ -133,6 +143,10 @@ class radar_sensor : public sensors{
 class camera_sensor : public sensors{
     private:
         vector<sensor_reading> camera_readings;
+        // vector<object*> objects;
+        // vector<int> positions;
+        // vector<float> distance_accuracy;
+        // vector<float> classification_accuracy;
     public:
         camera_sensor(object *** xartis , position * posi , int tax,direction * dire);
         vector<sensor_reading> extract_info();
@@ -140,18 +154,17 @@ class camera_sensor : public sensors{
 
 class sensor_fusion_engine{
     private:
-        lidar_sensor  * lidar;    
-        radar_sensor * radar;
-        camera_sensor * camera;
+        vector<sensor_reading>  * lidar;    
+        vector<sensor_reading>  * radar;
+        vector<sensor_reading> * camera;
 
         vector<sensor_reading> fused_sensor_readings;
         vector<sensor_reading> lidar_readings;
         vector<sensor_reading> radar_readings;
         vector<sensor_reading> camera_readings;
     public:
-        void extract_sensor_data();
+        void extract_sensor_data(vector<sensor_reading> &lidar,vector<sensor_reading> &radar,vector<sensor_reading> &camera);
         void fuse_sensor_data();
-        sensor_fusion_engine(self_driving_car * amaksi);
         sensor_fusion_engine();
         ~sensor_fusion_engine();
 };
@@ -201,9 +214,6 @@ class self_driving_car : public object {
         void turn();
         void extract_from_sensors();
         void print_direction();
-        lidar_sensor * get_lidar_sensor_pointer();
-        radar_sensor * get_radar_sensor_pointer();
-        camera_sensor * get_camera_sensor_pointer();
         ~self_driving_car(); //TODO i allocated memory for the lidar and radar and cmaera sensor l,ao
 };
 
