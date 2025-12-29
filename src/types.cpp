@@ -374,7 +374,6 @@ vector<sensor_reading> sensors::extract_info(){
 }
 
 // for sensor fusion engine
-
 sensor_fusion_engine::sensor_fusion_engine(){
     lidar = nullptr;
     radar = nullptr;
@@ -389,8 +388,15 @@ void sensor_fusion_engine::extract_sensor_data(){
     camera_readings = camera->extract_info();
 }
 
-void sensor_fusion_engine::fuse_sensor_data(){
-    //fuse all the data 
+void sensor_fusion_engine::fuse_sensor_data(){ 
+    //fuse all the data O(n**2)
+    for(int i = 0; i < lidar_readings.size(); i++){
+        if(is_in(lidar_readings[i])){
+            continue;
+        }
+
+        //else fuse
+    }
 }
 
 

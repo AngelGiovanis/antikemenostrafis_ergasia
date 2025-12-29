@@ -138,6 +138,9 @@ class camera_sensor : public sensors{
         vector<sensor_reading> extract_info();
 };
 
+
+class self_driving_car; //forward declaration
+
 class sensor_fusion_engine{
     private:
         lidar_sensor  * lidar;    
@@ -151,6 +154,7 @@ class sensor_fusion_engine{
     public:
         void extract_sensor_data();
         void fuse_sensor_data();
+        int is_in(sensor_reading sr);
         sensor_fusion_engine(self_driving_car * amaksi);
         sensor_fusion_engine();
         ~sensor_fusion_engine();
