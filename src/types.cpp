@@ -388,15 +388,40 @@ void sensor_fusion_engine::extract_sensor_data(){
     camera_readings = camera->extract_info();
 }
 
+int sensor_fusion_engine::is_in(sensor_reading sr){
+    for(int i = 0; i < fused_sensor_readings.size(); i++){
+        if (sr.id == fused_sensor_readings[i].id){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+//TODO fusion engine gamw 
 void sensor_fusion_engine::fuse_sensor_data(){ 
     //fuse all the data O(n**2)
     for(int i = 0; i < lidar_readings.size(); i++){
         if(is_in(lidar_readings[i])){
             continue;
         }
-
         //else fuse
     }
+
+    for(int i = 0; i < lidar_readings.size(); i++){
+        if(is_in(radar_readings[i])){
+            continue;
+        }
+        //else fuse
+    }
+
+    for(int i = 0; i < lidar_readings.size(); i++){
+        if(is_in(camera_readings[i])){
+            continue;
+        }
+        //else fuse
+    }
+    
 }
 
 
@@ -409,6 +434,8 @@ sensor_fusion_engine::sensor_fusion_engine(self_driving_car * amaksi){
 sensor_fusion_engine::~sensor_fusion_engine(){
   
 }
+
+
 lidar_sensor::lidar_sensor(object *** xartis , position * posi , int tax,direction * dire){
     map = xartis;
     thesi_amaksiou = posi;
